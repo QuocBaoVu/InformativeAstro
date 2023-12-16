@@ -1,0 +1,61 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
+import { PageMenuService } from '../page-menu.service';
+import { PageMenuCms } from 'src/app/_models/PageMenuCms.model';
+
+@Component({
+  selector: 'create-or-edit',
+  templateUrl: './create-or-edit.component.html',
+  styleUrls: ['./create-or-edit.component.scss'],
+  host: {
+    class: "popup-container"
+  }
+})
+export class CreateOrEditComponent implements OnInit {
+  form: FormGroup;
+  submitted = false;
+  isLoading = false;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public defaults: PageMenuCms,
+    private dialogRef: MatDialogRef<CreateOrEditComponent>,
+    private fb: UntypedFormBuilder,
+    private service: PageMenuService,
+    private toast: ToastrService
+  ) { }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      ...this.defaults,
+      name: [this.defaults.name, [Validators.required]],
+      code: [this.defaults.code, [Validators.required]],
+    });
+  }
+
+  get f() {
+    return this.form.controls;
+  }
+
+  onClose() {
+    this.dialogRef.close();
+  }
+
+  onSubmit() {
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.submitted = true;
+    const pageMenu = this.form.value as PageMenuCms;
+    this.service.savePageMenu(pageMenu).subscribe({
+      next: (response) => {
+        this.dialogRef.close(response);
+        this.toast.success(!this.defaults?.id ? "Thêm mới thành công!" : "Cập nhật thành công!");
+      },
+      error: () => this.toast.error(!this.defaults?.id ? "Thêm mới thất bại!" : "Cập nhật thất bại!"),
+      complete: () => this.submitted = false
+    });
+  }
+}

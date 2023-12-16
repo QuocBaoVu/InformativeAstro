@@ -1,0 +1,22 @@
+package com.globits.hivhis.service;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+
+import com.globits.hivhis.domain.CmsArticleGroup;
+import com.globits.hivhis.dto.CmsArticleGroupDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.core.service.GenericService;
+
+public interface CmsArticleGroupService extends GenericService<CmsArticleGroup, UUID>{
+
+	Page<CmsArticleGroupDto> searchByPage(SearchDto dto);
+	
+	CmsArticleGroupDto getOne(UUID id);
+	
+	CmsArticleGroupDto saveOrUpdate(CmsArticleGroupDto dto, UUID id);
+	
+	void deleteById(UUID id);
+
+}

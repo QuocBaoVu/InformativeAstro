@@ -1,0 +1,22 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CmsCategory } from 'src/app/_models/CmsCategory.model';
+
+@Component({
+  selector: 'create-or-edit',
+  templateUrl: './create-or-edit.component.html',
+  styleUrls: ['./create-or-edit.component.scss']
+})
+export class CreateOrEditComponent implements OnInit {
+  form: FormGroup;
+  submitted = false;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public defaults: CmsCategory,
+
+  ) { }
+
+  ngOnInit(): void {
+  }
+}

@@ -1,0 +1,44 @@
+<div class="popup-header">
+  <h3>{{!defaults?.id ? 'Thêm mới' : 'Chỉnh sửa'}} danh mục</h3>
+  <button type="button" tabindex="-1" mat-dialog-close>
+    <icon-close></icon-close>
+  </button>
+</div>
+
+<form (submit)="onSubmit()" [formGroup]="form!">
+  <mat-dialog-content class="popup-content p-3">
+    <input-component [control]="f?.code" controlName="code" [required]="true" requiredText="Mã không được bỏ trống!"
+      label="Mã danh mục"></input-component>
+
+    <input-component [control]="f?.title" controlName="title" [required]="true"
+      requiredText="Tiêu đề không được bỏ trống!" label="Tiêu đề"></input-component>
+
+    <input-component [control]="f?.slug" controlName="slug" label="Đường dẫn" [readonly]="true"></input-component>
+
+    <input-component [control]="f?.positionIndex" controlName="positionIndex" label="Thứ tự hiển thị"
+      type="number"></input-component>
+
+    <input-component [control]="f?.description" controlName="description" label="Mô tả" [textArea]="true"></input-component>
+
+    <div class="flex items-center gap-4">
+      <label class="m-0 flex items-center gap-1 cursor-pointer">
+        <input formControlName="isActive" type="checkbox" />
+        Sử dụng
+      </label>
+
+      <label class="m-0 flex items-center gap-1 cursor-pointer">
+        <input formControlName="showHomePage" type="checkbox" />
+        Hiện thị trang chủ
+      </label>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="popup-footer" align="end">
+    <button type="submit">
+      Lưu
+    </button>
+    <button type="button" mat-dialog-close>
+      Hủy
+    </button>
+  </mat-dialog-actions>
+</form>

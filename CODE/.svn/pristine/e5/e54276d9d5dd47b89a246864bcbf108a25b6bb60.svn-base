@@ -1,0 +1,140 @@
+<header class="flex items-center justify-between p-2">
+    <h4>Login</h4>
+    <div class="flex items-center bg-gray">
+        <input id="text" name="text" placeholder="search" class="bg-gray p-2 text-black" />
+        <span>
+            <svg width="33" height="37" viewBox="0 0 33 37" fill="none">
+                <mask id="mask0_10_10" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="33"
+                    height="37">
+                    <rect width="33" height="37" fill="#D9D9D9" />
+                </mask>
+                <g mask="url(#mask0_10_10)">
+                    <path
+                        d="M26.95 32.375L18.2875 22.6625C17.6 23.2792 16.8094 23.7674 15.9156 24.1271C15.0219 24.4868 14.0708 24.6667 13.0625 24.6667C10.5646 24.6667 8.45052 23.6967 6.72031 21.7568C4.9901 19.8168 4.125 17.4465 4.125 14.6458C4.125 11.8451 4.9901 9.47483 6.72031 7.5349C8.45052 5.59497 10.5646 4.625 13.0625 4.625C15.5604 4.625 17.6745 5.59497 19.4047 7.5349C21.1349 9.47483 22 11.8451 22 14.6458C22 15.7764 21.8396 16.8427 21.5188 17.8448C21.1979 18.8469 20.7625 19.7333 20.2125 20.5042L28.875 30.2167L26.95 32.375ZM13.0625 21.5833C14.7812 21.5833 16.2422 20.9089 17.4453 19.5599C18.6484 18.2109 19.25 16.5729 19.25 14.6458C19.25 12.7188 18.6484 11.0807 17.4453 9.73177C16.2422 8.38281 14.7812 7.70833 13.0625 7.70833C11.3438 7.70833 9.88281 8.38281 8.67969 9.73177C7.47656 11.0807 6.875 12.7188 6.875 14.6458C6.875 16.5729 7.47656 18.2109 8.67969 19.5599C9.88281 20.9089 11.3438 21.5833 13.0625 21.5833Z"
+                        fill="#1C1B1F" />
+                </g>
+            </svg>
+        </span>
+    </div>
+</header>
+
+<nav id="main-menu" class="main-menu">
+    <ng-container [ngTemplateOutlet]="Menu" [ngTemplateOutletContext]="{row: listMenuHeader, level: 1}">
+    </ng-container>
+</nav>
+
+<main class="main-content">
+    <section class="category p-4" *ngFor="let item of homePage?.listCategory">
+        <h3 class="name">
+        <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}">{{item?.name}}</a>
+    </h3>
+
+        <div class="grid grid-cols-12 gap-2">
+            <article class="col-span-3 card-article">
+                <div class="card-article-img" style="background-image: url(../../../assets/img/demo/2.jpg);"></div>
+                <p class="card-article-summary">Tiểu vùng sông Mekong thông qua sáng kiến của Trung Quốc về chống ma túy</p>
+                <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}" class="card-article-url"></a>
+            </article>
+
+            <article class="col-span-3 card-article">
+                <div class="card-article-img" style="background-image: url(../../../assets/img/demo/2.jpg);"></div>
+                <p class="card-article-summary">Tiểu vùng sông Mekong thông qua sáng kiến của Trung Quốc về chống ma túy</p>
+                <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}" class="card-article-url"></a>
+            </article>
+
+            <article class="col-span-3 card-article">
+                <div class="card-article-img" style="background-image: url(../../../assets/img/demo/2.jpg);"></div>
+                <p class="card-article-summary">Tiểu vùng sông Mekong thông qua sáng kiến của Trung Quốc về chống ma túy</p>
+                <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}" class="card-article-url"></a>
+            </article>
+
+            <article class="col-span-3 card-article">
+                <div class="card-article-img" style="background-image: url(../../../assets/img/demo/2.jpg);"></div>
+                <p class="card-article-summary">Tiểu vùng sông Mekong thông qua sáng kiến của Trung Quốc về chống ma túy</p>
+                <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}" class="card-article-url"></a>
+            </article>
+        </div>
+    </section>
+</main>
+
+<section class="regulations">
+    <img alt="Ảnh minh họa" src="../../../assets/img/demo/Rectangle 9.jpg" class="w-1/2" />
+    <div class="ml-auto mt-auto p-32 w-1/2 bg-blue-black h-max regulations-content">
+        <div class="p-3 bg-white">
+            <h1>QUY ĐỊNH VÀ PHÁP LUẬT</h1>
+            <p>laboriosam ipsum similique error incidunt.taque cumque iste provident. Nulla, velit consequuntur.
+                laboriosam ipsum similique error incidunt.taque cumque iste provident. Nulla, velit consequuntur.</p>
+            <h1 class="text-center">
+                <button class="btn-more"><b>Xem Thêm</b></button>
+            </h1>
+        </div>
+    </div>
+</section>
+
+<section class="grid grid-cols-2 p-4 gap-5 mt-10">
+    <div class="bg-gray-400"></div>
+    <div>
+        <h1>ABOUT US</h1>
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Autem aut omnis alias quis rerum dolorem earum quam praesentium nulla,
+            veritatis porro eaque at aliquid repellat illum.
+            Vel laudantium natus placeat. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Autem aut omnis alias quis rerum dolorem earum quam praesentium nulla,
+            veritatis porro eaque at aliquid repellat illum.
+            Vel laudantium natus placeat
+        </p>
+    </div>
+</section>
+
+<footer class="flex items-center justify-between bg-blue-black p-4 text-white">
+    <div>
+        <p>Contact us</p>
+        <p>Email: voanhtuantia@gmail.com</p>
+        <p>Tele no. 0358133756</p>
+        <p class="flex items-center gap-2">
+            <svg width="44" height="44" viewBox="0 0 60 60" fill="none">
+                <path
+                    d="M30 60C46.5685 60 60 46.5685 60 30C60 13.4315 46.5685 0 30 0C13.4315 0 0 13.4315 0 30C0 46.5685 13.4315 60 30 60Z"
+                    fill="#3C5A99" />
+                <path
+                    d="M32.3976 45V31.3333H37.1325L37.8434 25.9826H32.3976V22.5777C32.3976 21.0305 32.8374 19.9814 35.1145 19.9814H38V15.211C37.5 15.1465 35.7771 15 33.7711 15C29.5843 15 26.7169 17.4849 26.7169 22.0502V25.9885H22V31.3391H26.7169V45H32.3976Z"
+                    fill="white" />
+            </svg>
+            <svg width="47" height="47" viewBox="0 0 63 63" fill="none">
+                <path
+                    d="M31.2686 62.5371C48.5377 62.5371 62.5371 48.5377 62.5371 31.2686C62.5371 13.9994 48.5377 0 31.2686 0C13.9994 0 0 13.9994 0 31.2686C0 48.5377 13.9994 62.5371 31.2686 62.5371Z"
+                    fill="#E4405F" />
+                <path
+                    d="M31.2686 15.6343C27.0241 15.6343 26.4928 15.6526 24.8255 15.7259C23.1583 15.8053 22.0285 16.0679 21.033 16.4526C20.007 16.8496 19.1337 17.387 18.2604 18.2542C17.387 19.1215 16.8557 19.9948 16.4588 21.0269C16.074 22.0223 15.8114 23.1583 15.732 24.8194C15.6526 26.4867 15.6404 27.018 15.6404 31.2625C15.6404 35.5069 15.6587 36.0382 15.732 37.7055C15.8114 39.3666 16.074 40.5026 16.4588 41.498C16.8557 42.524 17.3931 43.3973 18.2604 44.2707C19.1276 45.1379 20.0009 45.6753 21.033 46.0723C22.0285 46.457 23.1644 46.7196 24.8255 46.799C26.4928 46.8784 27.0241 46.8906 31.2686 46.8906C35.513 46.8906 36.0444 46.8723 37.7116 46.799C39.3728 46.7196 40.5087 46.457 41.5041 46.0723C42.5301 45.6753 43.4035 45.1379 44.2768 44.2707C45.144 43.4035 45.6814 42.5301 46.0784 41.498C46.4631 40.5026 46.7258 39.3666 46.8051 37.7055C46.8845 36.0382 46.8968 35.5069 46.8968 31.2625C46.8968 27.018 46.8784 26.4867 46.8051 24.8194C46.7258 23.1583 46.4631 22.0223 46.0784 21.0269C45.6814 20.0009 45.144 19.1276 44.2768 18.2542C43.4096 17.387 42.5362 16.8496 41.5041 16.4526C40.5087 16.0679 39.3728 15.8053 37.7116 15.7259C36.0444 15.6526 35.513 15.6343 31.2686 15.6343ZM31.2686 18.4497C35.4398 18.4497 35.9405 18.468 37.5895 18.5413C39.1163 18.6146 39.9407 18.865 40.4904 19.0848C41.2232 19.3657 41.7423 19.7077 42.292 20.2513C42.8355 20.8009 43.1775 21.32 43.4584 22.0529C43.6722 22.6025 43.9287 23.427 43.9959 24.9538C44.0691 26.6027 44.0875 27.0974 44.0875 31.2747C44.0875 35.452 44.0691 35.9466 43.9897 37.5956C43.9104 39.1223 43.6539 39.9468 43.4401 40.4965C43.147 41.2293 42.8172 41.7484 42.2675 42.2981C41.724 42.8416 41.1927 43.1836 40.472 43.4645C39.9224 43.6783 39.0857 43.9348 37.5589 44.002C35.8978 44.0752 35.4092 44.0936 31.2258 44.0936C27.0424 44.0936 26.5539 44.0752 24.8927 43.9958C23.3659 43.9165 22.5293 43.66 21.9796 43.4462C21.2406 43.1531 20.7276 42.8233 20.1841 42.2736C19.6345 41.7301 19.2864 41.1988 19.0115 40.4781C18.7978 39.9285 18.5413 39.0918 18.4619 37.565C18.4008 35.9222 18.3825 35.4153 18.3825 31.2563C18.3825 27.0913 18.4008 26.5844 18.4619 24.9232C18.5413 23.3965 18.7917 22.5598 19.0115 22.0101C19.2864 21.2651 19.6345 20.7582 20.1841 20.2085C20.7276 19.665 21.2406 19.3108 21.9796 19.036C22.5293 18.8222 23.3476 18.5657 24.8744 18.4863C26.5355 18.4252 27.0241 18.4069 31.2075 18.4069L31.2686 18.4497ZM31.2686 23.2377C26.8348 23.2377 23.2377 26.8348 23.2377 31.2686C23.2377 35.7023 26.8348 39.2995 31.2686 39.2995C35.7024 39.2995 39.2995 35.7023 39.2995 31.2686C39.2995 26.8348 35.7024 23.2377 31.2686 23.2377ZM31.2686 36.478C28.3921 36.478 26.0592 34.145 26.0592 31.2686C26.0592 28.3921 28.3921 26.0592 31.2686 26.0592C34.145 26.0592 36.478 28.3921 36.478 31.2686C36.478 34.145 34.145 36.478 31.2686 36.478ZM41.4919 22.9262C41.4919 23.9644 40.6491 24.8011 39.617 24.8011C38.5788 24.8011 37.7421 23.9583 37.7421 22.9262C37.7421 21.8941 38.5849 21.0513 39.617 21.0513C40.6491 21.0452 41.4919 21.888 41.4919 22.9262Z"
+                    fill="white" />
+            </svg>
+            <svg width="47" height="47" viewBox="0 0 63 63" fill="none">
+                <path
+                    d="M31.5 63C48.897 63 63 48.897 63 31.5C63 14.103 48.897 0 31.5 0C14.103 0 0 14.103 0 31.5C0 48.897 14.103 63 31.5 63Z"
+                    fill="#607D8B" />
+                <path
+                    d="M42.4942 18.937H20.5058C17.9033 18.937 15.7931 21.0473 15.7931 23.6497V39.3566C15.7931 41.9591 17.9033 44.0693 20.5058 44.0693H42.4942C45.0967 44.0693 47.2069 41.9591 47.2069 39.3566V23.6436C47.2069 21.0411 45.0967 18.937 42.4942 18.937ZM41.8544 22.0747L32.6136 31.3094C32.0045 31.9246 31.0078 31.9308 30.3926 31.3155L30.3864 31.3094L21.1456 22.0747H41.8544ZM44.0692 39.3566C44.0692 40.2241 43.3679 40.9255 42.5004 40.9255H20.5058C19.6383 40.9255 18.9369 40.2241 18.9369 39.3566V24.2896L28.1716 33.5242C30.0111 35.3638 32.9889 35.3638 34.8346 33.5242L44.0692 24.2896V39.3566Z"
+                    fill="white" />
+            </svg>
+        </p>
+    </div>
+    <h3 class="text-end"><b>LOGO</b></h3>
+</footer>
+
+<ng-template #Menu let-level="level" let-row="row">
+    <ul class="{{level === 1 ? 'menu' : 'sub-menu'}}">
+        <li *ngFor="let item of row">
+            <ng-container [ngTemplateOutlet]="ItemMenu" [ngTemplateOutletContext]="{item: item, level}">
+            </ng-container>
+        </li>
+    </ul>
+
+    <ng-template #ItemMenu let-item="item" let-level="level">
+        <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}">{{item?.name}}</a>
+        <ng-container *ngIf="level === 1 && item?.children?.length > 0">
+            <ng-container [ngTemplateOutlet]="Menu" [ngTemplateOutletContext]="{row: item?.children, level: level + 1}">
+            </ng-container>
+        </ng-container>
+    </ng-template>
+</ng-template>

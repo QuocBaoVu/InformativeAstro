@@ -1,0 +1,43 @@
+<section class="banner" style="background-image: url(assets/img/bgr-slider.jpg)">
+    <menu></menu>
+</section>
+
+<section class="main-content ngx-datatable material container" style="box-shadow: none">
+    <ng-container *ngIf="articleView">
+        <h2>{{articleView?.title}}</h2>
+        <p>{{articleView?.publishDate}}</p>
+        <h4>{{articleView?.summary}}</h4>
+        <section [innerHTML]="articleView?.content"></section>
+    </ng-container>
+
+    <ng-container *ngIf="!articleView">
+        <h3>{{ categoryView?.name }}</h3>
+
+        <article *ngFor="let item of pageArticle?.content || []" class="grid-container gap-2 article">
+            <a [routerLink]="[link + item.slug]" href="{{ link + item.slug }}" class="grid-sm-3">
+                <img src="{{ item.titleImageUrl }}" alt="{{ item.title }}" />
+            </a>
+
+            <div class="grid-sm-9">
+                <a [routerLink]="[link + item.slug]" href="{{ link + item.slug }}">
+                    <h4>{{ item.title }}</h4>
+                </a>
+                <p>{{ item.publishDate | date : "dd/MM/YYYY HH:mm" }}</p>
+                <h5>{{ item.summary }}</h5>
+
+                <p class="text-end text-lg">
+                    <a [routerLink]="[link + item.slug]" href="{{ link + item.slug }}">
+                        <i class="fa fa-angle-right"></i>
+                        <em>Xem chi tiết</em>
+                    </a>
+                </p>
+            </div>
+        </article>
+
+        <div class="datatable-footer text-end p-1">
+            <globits-datatable-pager (change)="onChangePageIndex($event)" [page]="searchArticle.pageIndex"
+                [size]="searchArticle.pageSize" [count]="pageArticle.totalElements" [displayOnlyPagination]="true">
+            </globits-datatable-pager>
+        </div>
+    </ng-container>
+</section>

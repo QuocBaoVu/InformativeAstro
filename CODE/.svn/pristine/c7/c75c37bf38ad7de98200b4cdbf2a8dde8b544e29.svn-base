@@ -1,0 +1,23 @@
+package com.globits.hivhis.service;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+
+import com.globits.hivhis.domain.PageMenuCms;
+import com.globits.hivhis.dto.PageMenuCmsDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.core.service.GenericService;
+
+public interface PageMenuCmsService extends GenericService<PageMenuCms, UUID>{
+
+	Page<PageMenuCmsDto> searchByPage(SearchDto dto);
+	
+	PageMenuCmsDto getOne(UUID id);
+	
+	PageMenuCmsDto saveOrUpdate(PageMenuCmsDto dto, UUID id);
+	
+	boolean deleteById(UUID id);
+
+	boolean checkDuplicatedCode(PageMenuCmsDto pageMenuCmsDto);
+}

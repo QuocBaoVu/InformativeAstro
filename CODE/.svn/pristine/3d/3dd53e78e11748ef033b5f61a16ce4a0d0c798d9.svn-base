@@ -1,0 +1,71 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
+import { Website } from 'src/app/_models/Website.model';
+import { WebsiteService } from '../website.service';
+
+@Component({
+  selector: 'create-or-edit',
+  templateUrl: './create-or-edit.component.html',
+  styleUrls: ['./create-or-edit.component.scss'],
+  host: {
+    class: "popup-container"
+  }
+})
+export class CreateOrEditComponent implements OnInit {
+  form: FormGroup;
+  submitted = false;
+  isLoading = false;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public defaults: Website,
+    private dialogRef: MatDialogRef<CreateOrEditComponent>,
+    private fb: UntypedFormBuilder,
+    private service: WebsiteService,
+    private toast: ToastrService
+  ) { }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      ...this.defaults,
+      name: [this.defaults.name, [Validators.required]],
+      code: [this.defaults.code, [Validators.required]],
+      domain: [this.defaults.domain, [Validators.required]],
+    });
+  }
+
+  get f() {
+    return this.form.controls;
+  }
+
+  onClose() {
+    this.dialogRef.close();
+  }
+
+  onSubmit() {
+    if (this.form.invalid) {
+      return;
+    }
+    const website = this.form.value as Website;
+    this.service.checkDomain(website.domain).subscribe({
+      next: (response) => {
+        if(response){
+          this.toast.error("Tên miền đã tồn tại!", "Thông báo");
+          this.submitted = false;
+        }else{
+          this.submitted = true;
+          this.service.saveWebsite(website).subscribe({
+            next: (response) => {
+              this.dialogRef.close(response);
+              this.toast.success(!this.defaults?.id ? "Thêm mới thành công!" : "Cập nhật thành công!", "Thông báo");
+            },
+            error: () => this.toast.error(!this.defaults?.id ? "Thêm mới thất bại!" : "Cập nhật thất bại!", "Thông báo"),
+            complete: () => this.submitted = false
+          });
+        }
+      }
+    })
+
+  }
+}

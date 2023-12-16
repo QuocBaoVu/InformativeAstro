@@ -1,0 +1,44 @@
+package com.globits.hivhis.service;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+
+import com.globits.hivhis.domain.CmsArticle;
+import com.globits.hivhis.dto.CmsArticleDto;
+import com.globits.hivhis.dto.CmsCategoryDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.core.service.GenericService;
+
+public interface CmsArticleService extends GenericService<CmsArticle, UUID>{
+
+	Page<CmsArticleDto> getPageCmsArticleDto(int pageIndex, int pageSize);
+	Page<CmsArticleDto> getPageCmsArticleByCategory(UUID categoryId, int pageIndex, int pageSize);
+
+	CmsArticleDto getCmsArticleDtoById(UUID id);
+
+	CmsArticleDto saveCmsArticle(CmsArticleDto dto, UUID id);
+
+	Boolean deleteCmsArticleById(UUID id);
+
+	Page<CmsArticleDto> searchArticleServiceBySearchDto(SearchDto search);
+	
+	void seeNews(UUID id);
+
+	Page<CmsArticleDto> getPageCmsArticleOrderByViewDESC(int pageIndex, int pageSize);
+
+	CmsArticleDto getCmsArticleDtoByIdByPublishAPI(UUID id);
+
+	Page<CmsArticleDto> searchArticleServiceBySearchDtoByPublishAPI(SearchDto searchDto);
+
+	Page<CmsArticleDto> searchByDto(SearchDto search);
+	
+	Boolean checkSlug(UUID id,String slug);
+	
+	List<CmsArticleDto> saveImportCmsArticleDto(List<CmsArticleDto> list);
+	
+	List<CmsCategoryDto> getListCategoryAndArticleOfCategory(UUID listIdCategory, int pageIndex, int pageSize);
+	
+	Page<CmsArticleDto> searchByName(SearchDto search);
+}

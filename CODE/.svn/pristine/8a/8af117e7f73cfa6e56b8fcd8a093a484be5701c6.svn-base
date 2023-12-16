@@ -1,0 +1,20 @@
+package com.globits.hivhis.service;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+
+import com.globits.hivhis.domain.Website;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.hivhis.dto.WebsiteDto;
+import com.globits.core.service.GenericService;
+
+public interface WebsiteService extends GenericService<Website, UUID>{
+	public WebsiteDto getWebsite(String domainName);
+	WebsiteDto saveOrUpdate(WebsiteDto dto,UUID id);
+	WebsiteDto getOne(UUID id);
+	void deleteById(UUID id);
+	Page<WebsiteDto> searchByPage(SearchDto searchDto);	
+	Boolean checkDuplicateDomain(UUID id, String code);
+	Boolean deleteCheckById(UUID id);
+}

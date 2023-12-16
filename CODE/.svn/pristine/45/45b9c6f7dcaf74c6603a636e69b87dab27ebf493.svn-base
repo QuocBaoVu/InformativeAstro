@@ -1,0 +1,74 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CmsCategory } from 'src/app/_models/CmsCategory.model';
+import { CategoryService } from '../category.service';
+import { ToastrService } from 'ngx-toastr';
+import { convertTitleToSlug } from 'src/app/_common/constant/local-function';
+import { SearchObject } from 'src/app/_models/SearchObject.model';
+import { PagePaging } from 'src/app/_models/PagePaging';
+import { ColumnsTable } from 'src/app/_common/component/table/table.component';
+
+@Component({
+  selector: 'create-or-edit',
+  templateUrl: './create-or-edit.component.html',
+  styleUrls: ['./create-or-edit.component.scss'],
+  host: {
+    class: "popup-container"
+  }
+
+})
+export class CreateOrEditComponent implements OnInit {
+  form: FormGroup;
+  submitted = false;
+  isLoading = false;
+  searchObject: SearchObject = new SearchObject();
+  pageCategory: PagePaging<CmsCategory> = new PagePaging();
+  columns?: ColumnsTable[] = [
+    { prop: "title", name: "Tiêu đề" },
+    { prop: "code", name: "Mã" },
+  ];
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public defaults: CmsCategory,
+    private dialogRef: MatDialogRef<CreateOrEditComponent>,
+    private fb: UntypedFormBuilder,
+    private service: CategoryService,
+    private toast: ToastrService
+  ) { }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      ...this.defaults,
+      title: [this.defaults.title, [Validators.required]],
+      code: [this.defaults.code, [Validators.required]],
+    });
+  }
+
+  get f() {
+    return this.form.controls;
+  }
+
+  onClose() {
+    this.dialogRef.close();
+  }
+
+  onSubmit() {
+    console.log(this.form.invalid)
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.submitted = true;
+    const category = this.form.value as CmsCategory;
+    category.slug = convertTitleToSlug(category.title)
+    this.service.saveCategory(category).subscribe({
+      next: (response) => {
+        this.dialogRef.close(response);
+        this.toast.success(!this.defaults?.id ? "Thêm mới thành công!" : "Cập nhật thành công!");
+      },
+      error: () => this.toast.error(!this.defaults?.id ? "Thêm mới thất bại!" : "Cập nhật thất bại!"),
+      complete: () => this.submitted = false
+    });
+  }
+}

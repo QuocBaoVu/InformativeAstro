@@ -1,0 +1,112 @@
+.btn-more {
+    border: 2px solid #303F73;
+    color: #303F73;
+    padding: 3px 10px;
+    border-radius: 10px;
+    transition: all .2s ease-in-out;
+
+    &:hover {
+        background-color: #303F73;
+        color: #ffffff;
+        border-color: #ffffff;
+    }
+}
+
+.regulations {
+    position: relative;
+    height: 600px;
+
+    .regulations-content {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+
+    img {
+        margin: auto;
+    }
+}
+
+:host {
+    .main-content {
+        margin-bottom: 10px;
+        max-width: 1150px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .category {
+        margin-bottom: 2rem;
+
+        .name {
+            color: #001373;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: underline;
+
+            a {
+                text-decoration: none;
+            }
+        }
+
+        .list-card-article {
+            max-height: 100%;
+            overflow: auto;
+
+            .card-article {
+                border-bottom: 1px solid #00000080;
+                padding: 0.75rem;
+
+                &:first-child {
+                    padding-top: 0;
+                }
+
+                &:last-child {
+                    border: none;
+                }
+            }
+        }
+
+        .card-article {
+            position: relative;
+
+            .card-article-img {
+                height: 170px;
+                width: 100%;
+                background-position: center;
+                background-size: cover;
+            }
+
+            .card-article-summary {
+                font-size: 15px;
+                margin: .88em 0 0;
+                font-weight: normal;
+                color: #020202;
+            }
+
+            .card-article-url {
+                position: absolute;
+                inset: 0;
+            }
+
+            &-first {
+                display: flex;
+                flex-direction: column;
+                border-right: 1px solid #00000080;
+                border-bottom: none;
+
+                .card-article-img {
+                    height: 100%;
+                }
+            }
+        }
+
+        &:nth-child(even) {
+            background-color: #efefef;
+        }
+    }
+}

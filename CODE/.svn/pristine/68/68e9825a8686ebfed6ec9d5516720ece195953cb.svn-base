@@ -1,0 +1,5 @@
+package com.globits.hivhis.domain;
+
+public class WebsiteTemplate {
+
+}

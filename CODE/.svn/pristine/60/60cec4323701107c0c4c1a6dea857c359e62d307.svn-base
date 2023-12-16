@@ -1,0 +1,9 @@
+import { toPath } from "lodash";
+
+export function getInObject<T = any>(objValue: T, fieldValue: string): any {
+  toPath(fieldValue).forEach((item) => {
+    objValue = objValue?.[item];
+  });
+
+  return objValue;
+}

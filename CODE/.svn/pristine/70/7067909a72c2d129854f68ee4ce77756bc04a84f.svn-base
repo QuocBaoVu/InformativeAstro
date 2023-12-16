@@ -1,0 +1,29 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { CmsArticle } from 'src/app/_models/CmsArticle.model';
+import { ConfigInitService } from 'src/app/init/config-init.service';
+import { HomePage } from '../_models/HomePage.model';
+import { MenuHeader } from '../_models/MenuHeader.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PageUserService {
+  private requestHeaders = new HttpHeaders();
+
+  private readonly END_POINT = this.configInitService.apiBaseUrl + "/public";
+
+  constructor(private http: HttpClient, private configInitService: ConfigInitService) { }
+
+  getArticleBySlug(slug: string) {
+    return this.http.get<CmsArticle>(this.END_POINT + "/get-article-by-slug/" + slug, { responseType: "json" });
+  }
+
+  getHomePage() {
+    return this.http.get<HomePage>(this.END_POINT + "/get-home-page", { responseType: "json" });
+  }
+
+  getMenuHeader() {
+    return this.http.get<Array<MenuHeader>>(this.END_POINT + "/get-menu-header", { responseType: "json" });
+  }
+}

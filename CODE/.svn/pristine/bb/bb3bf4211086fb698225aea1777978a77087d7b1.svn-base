@@ -1,0 +1,23 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HomePage } from 'src/app/_models/HomePage.model';
+import { MenuHeader } from 'src/app/_models/MenuHeader.model';
+import { ConfigInitService } from 'src/app/init/config-init.service';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class HomeService {
+
+    private readonly END_POINT = this.configInitService.apiBaseUrl + "/public";
+
+    constructor(private http: HttpClient, private configInitService: ConfigInitService) { }
+
+    getHomePage() {
+        return this.http.get<HomePage>(this.END_POINT + "/get-home-page", { responseType: "json" });
+    }
+
+    getMenuHeader() {
+        return this.http.get<Array<MenuHeader>>(this.END_POINT + "/get-menu-header", { responseType: "json" });
+    }
+}

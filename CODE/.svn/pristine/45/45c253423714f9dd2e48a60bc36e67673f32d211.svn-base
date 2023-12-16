@@ -1,0 +1,192 @@
+package com.globits.cms.service.impl;
+
+import com.globits.cms.Const;
+import com.globits.cms.domain.CmsArticle;
+import com.globits.cms.domain.CmsCategory;
+import com.globits.cms.dto.CmsArticleDto;
+import com.globits.cms.dto.CmsSearchDto;
+import com.globits.cms.dto.home.ArticleViewDto;
+import com.globits.cms.dto.home.CategoryViewDto;
+import com.globits.cms.dto.home.HomePageDto;
+import com.globits.cms.dto.home.MenuHeaderDto;
+import com.globits.cms.repository.CmsArticleRepsitory;
+import com.globits.cms.repository.CmsCategoryRepository;
+import com.globits.cms.repository.PageMenuCmsRepository;
+import com.globits.cms.service.CmsPublishService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class CmsPublishServiceImpl implements CmsPublishService {
+    @Autowired
+    private PageMenuCmsRepository pageMenuCmsRepository;
+
+    @Autowired
+    private CmsCategoryRepository categoryRepository;
+
+    @Autowired
+    private CmsArticleRepsitory articleRepository;
+
+    @PersistenceContext
+    public EntityManager manager;
+
+    public CmsPublishServiceImpl() {
+    }
+
+    @Override
+    public List<MenuHeaderDto> getMenuHeader() {
+        return pageMenuCmsRepository.getListMenuHeader();
+    }
+
+    @Override
+    public List<CategoryViewDto> getCategoryBySlug(String slug) {
+        if (slug != null) {
+            CmsCategory category = categoryRepository.getCategoryBySlug(slug);
+            if (category != null) {
+                if (category.getParent() == null) {
+                    return categoryRepository.getAllCategoryBySlug(slug);
+                } else if (category.getParent().getParent() == null) {
+                    return categoryRepository.getAllCategoryBySlug(slug);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Page<ArticleViewDto> getPageArticleBySlug(CmsSearchDto dto) {
+        if (dto != null && dto.getSlug() != null) {
+            int pageIndex = dto.getPageIndex() != null ? dto.getPageIndex() : 0;
+            pageIndex = pageIndex > 0 ? pageIndex - 1 : 0;
+            int pageSize = dto.getPageSize() != null ? dto.getPageSize() : 10;
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            CmsCategory category = categoryRepository.getCategoryBySlug(dto.getSlug());
+            List<UUID> articleIds = this.getArticleByCategory(category);
+            if (articleIds != null && articleIds.size() > 0) {
+                String hql = "select new com.globits.cms.dto.home.ArticleViewDto(e, true) from CmsArticle e ";
+                String hqlCount = "select count(e) from CmsArticle e ";
+                String whereClause = " where (e.id in (:articleIds)) ";
+                String orderBy = " order by e.publishDate ";
+                hql += whereClause + orderBy;
+                hqlCount += whereClause;
+                Query query = manager.createQuery(hql, ArticleViewDto.class);
+                Query queryCount = manager.createQuery(hqlCount);
+                query.setParameter("articleIds", articleIds);
+                queryCount.setParameter("articleIds", articleIds);
+                List<ArticleViewDto> result = query.getResultList();
+                long count = (long) queryCount.getSingleResult();
+                return new PageImpl<>(result, pageable, count);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public CmsArticleDto getArticleBySlug(String slug) {
+        try {
+            String hql = "select new com.globits.cms.dto.CmsArticleDto(e, true) from CmsArticle e ";
+            String whereClause = " where (e.slug in (:slug)) ";
+            hql += whereClause;
+            Query query = manager.createQuery(hql, CmsArticleDto.class);
+            query.setParameter("slug", slug);
+            CmsArticleDto result = (CmsArticleDto) query.getSingleResult();
+            return result;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public HomePageDto getHomePage() {
+        HomePageDto result = new HomePageDto();
+        // bai viet slider
+        result.setArticleSlider(articleRepository.getArticleDisplayHomePage());
+        // tin tuc
+        List<CategoryViewDto> listCategory = new ArrayList<>();
+        List<CmsCategory> listCategories = categoryRepository.getHomePageCategory();
+        if (listCategories != null && listCategories.size() > 0) {
+            for (CmsCategory category : listCategories) {
+                CategoryViewDto categoryView = new CategoryViewDto(category);
+                List<CmsArticleDto> listArticle = articleRepository.getListCmsArticleByCategory(categoryView.getId());
+
+                if (listArticle != null && listArticle.size() > 0){
+                    List<ArticleViewDto> listViewArticle = new ArrayList<>();
+                    for (CmsArticleDto article : listArticle) {
+                        ArticleViewDto viewArticle =  new ArticleViewDto();
+                        viewArticle.setId(article.getId());
+
+                        if (article.getTitle() != null) {
+                            viewArticle.setTitle(article.getTitle());
+                        }
+
+                        if (article.getSummary() != null){
+                            viewArticle.setSummary(article.getSummary());
+                        }
+
+                        if (article.getSlug() != null){
+                            viewArticle.setSlug(article.getSlug());
+                        }
+
+                        if (article.getPublishDate() != null){
+                            viewArticle.setPublishDate(article.getPublishDate());
+                        }
+
+                        if (article.getTitleImageUrl() != null){
+                            viewArticle.setTitleImageUrl(article.getTitleImageUrl());
+                        }
+
+                        listViewArticle.add(viewArticle);
+                    }
+
+                    categoryView.setArticles(listViewArticle);
+                }
+
+                listCategory.add(categoryView);
+            }
+
+        }
+
+        result.setListCategory(listCategory);
+        return result;
+    }
+
+    private List<UUID> getArticleByCategory(CmsCategory category) {
+        if (category != null && category.getId() != null) {
+            String hql = "select ca.article.id from CmsCategoryArticle ca " +
+                    " where (ca.category.id = :categoryId or ca.category.parent.id = :categoryId)";
+            Query query = manager.createQuery(hql);
+            query.setParameter("categoryId", category.getId());
+            return (List<UUID>) query.getResultList();
+        }
+        return null;
+    }
+
+    private CategoryViewDto getArticleByCategorySlug(CmsCategory category, Integer limit) {
+        CategoryViewDto result = new CategoryViewDto();
+        List<UUID> articleIds = this.getArticleByCategory(category);
+        if (articleIds != null && articleIds.size() > 0) {
+            result.setName(category.getTitle());
+            String hql = "select new com.globits.cms.dto.home.ArticleViewDto(ca, false) " +
+                    " from CmsArticle ca where ca.id in :articleIds ";
+            Query query = manager.createQuery(hql, ArticleViewDto.class);
+            query.setParameter("articleIds", articleIds);
+            if (limit != null) {
+                query.setMaxResults(limit);
+            }
+            result.getArticles().addAll(query.getResultList());
+            return result;
+        }
+        return null;
+    }
+}

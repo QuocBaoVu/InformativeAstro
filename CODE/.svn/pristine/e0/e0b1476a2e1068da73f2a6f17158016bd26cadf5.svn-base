@@ -1,0 +1,7 @@
+$color-white: #ffffff;
+$color-blue-black: #0a1f77;
+$color-gray-blue: #303F737A;
+$color-blue: #50bbff;
+$color-red: red;
+$color-gray: #D4D4D4;
+$color-green: #00a65a;

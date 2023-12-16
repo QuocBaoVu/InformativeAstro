@@ -1,0 +1,75 @@
+import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { Breadcrumb } from 'src/app/_common/component/breadcrumbs/breadcrumbs.component';
+import { CmsCategory } from 'src/app/_models/CmsCategory.model';
+import { PagePaging } from 'src/app/_models/PagePaging';
+import { SearchObject } from 'src/app/_models/SearchObject.model';
+import { CategoryService } from './category.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateOrEditComponent } from './create-or-edit/create-or-edit.component';
+import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from 'src/app/_common/component/confirm-dialog/confirm-dialog.service';
+
+@Component({
+  selector: 'category',
+  templateUrl: './category.component.html',
+  styleUrls: ['./category.component.scss']
+})
+export class CategoryComponent implements OnInit {
+  breadcrumbs?: Breadcrumb[] = [];
+  isLoading = false;
+  searchForm: FormGroup = null;
+  searchObject: SearchObject = new SearchObject();
+  pageCategory: PagePaging<CmsCategory> = new PagePaging();
+
+  constructor(
+    private service: CategoryService,
+    private toast: ToastrService,
+    private dialog: MatDialog,
+    private confirmDialog: ConfirmDialogService
+    ) { }
+
+  ngOnInit(): void {
+  }
+
+  pagingCategory() {
+    this.isLoading = true;
+    this.service.pagingCategory(this.searchObject).subscribe({
+      next: res => this.pageCategory = res,
+      complete: () => this.isLoading = false
+    })
+  }
+
+  submitSearch() {
+    this.searchObject.checkSearchObject(this.searchForm.getRawValue());
+    this.pagingCategory();
+  }
+
+  async openFormCreateOrEditCategory(categoryId?: string) {
+    let data = new CmsCategory();
+    if (categoryId) {
+      data = await this.service.getCategory(categoryId).toPromise();
+    }
+    this.dialog.open(CreateOrEditComponent, { disableClose: true, data }).afterClosed().subscribe(res => Boolean(res) && this.pagingCategory())
+  }
+
+  deleteCategory(id: string) {
+    this.service.deleteCategory(id).subscribe({
+      next: (res) => {
+        if (res) {
+          this.toast.success("Xoá bản ghi thành công", "Thông báo");
+          this.pagingCategory();
+        }
+      },
+      error: (err) => this.toast.warning("Xoá bản ghi thất bại", "Thông báo"),
+    });
+  }
+
+  handleDeleteCategory(id: string) {
+    this.confirmDialog.openConfirmDialog({
+      title: "Bạn có chắc muốn xóa bản ghi này?",
+      text: "Bạn sẽ không thể khôi phục bản ghi này!",
+      onYesClick: () => this.deleteCategory(id),
+    });
+  }
+}

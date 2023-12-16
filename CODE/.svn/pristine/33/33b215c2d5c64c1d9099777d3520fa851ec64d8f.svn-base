@@ -1,0 +1,6 @@
+<div>
+    <h3>{{!defaults?.id ? 'Thêm mới' : 'Chỉnh sửa'}} damh mục</h3>
+    <button type="button" tabindex="-1" mat-dialog-close>
+        <icon-close></icon-close>
+    </button>
+</div>

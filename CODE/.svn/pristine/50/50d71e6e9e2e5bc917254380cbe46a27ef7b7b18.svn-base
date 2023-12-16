@@ -1,0 +1,106 @@
+package com.globits.hivhis.dto;
+
+import java.util.UUID;
+
+import com.globits.hivhis.domain.Website;
+import com.globits.core.dto.OrganizationDto;
+
+public class WebsiteDto extends BaseObjectDto{	
+	private String name;
+	private String code;
+	private String domain;
+	private String template;
+	private OrganizationDto org;
+	private WebsiteDto parent;
+	private String logoPath;
+	private UUID parentId;
+
+	public WebsiteDto() {
+
+	}
+
+	public WebsiteDto(Website entity, boolean isGetParent) {
+		if(entity!=null) {
+			this.name = entity.getName();
+			this.code = entity.getCode();
+			this.domain = entity.getDomain();
+			this.template = entity.getTemplate();
+			this.logoPath=entity.getLogoPath();
+			this.setId(entity.getId());
+			if(entity.getOrg()!=null) {
+				this.org = new OrganizationDto();
+				this.org.setCode(entity.getOrg().getCode());
+				this.org.setName(entity.getOrg().getName());
+				this.org.setId(entity.getOrg().getId());
+			}
+
+			if(entity.getParent()!=null) {
+				if(isGetParent) {
+					this.parent = new WebsiteDto();
+					this.parent.setId(entity.getParent().getId());
+					this.parent.setName(entity.getParent().getName());
+					this.parent.setCode(entity.getParent().getCode());
+					this.parent.setDomain(entity.getParent().getDomain());
+					this.parent.setTemplate(entity.getParent().getTemplate());
+
+				}
+				this.setParentId(this.parent.getId());
+			}
+		}
+	}
+
+	public WebsiteDto(Website entity) {
+		this(entity,true);
+	}
+	
+	public String getLogoPath() {
+		return logoPath;
+	}
+	public void setLogoPath(String logoPath) {
+		this.logoPath = logoPath;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getTemplate() {
+		return template;
+	}
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+	public OrganizationDto getOrg() {
+		return org;
+	}
+	public void setOrg(OrganizationDto org) {
+		this.org = org;
+	}
+	public WebsiteDto getParent() {
+		return parent;
+	}
+	public void setParent(WebsiteDto parent) {
+		this.parent = parent;
+	} 
+	
+	
+	public UUID getParentId() {
+		return parentId;
+	}
+	public void setParentId(UUID parentId) {
+		this.parentId = parentId;
+	}
+}

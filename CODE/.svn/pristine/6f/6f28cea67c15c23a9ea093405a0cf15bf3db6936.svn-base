@@ -1,0 +1,110 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Breadcrumb } from 'src/app/_common/component/breadcrumbs/breadcrumbs.component';
+import { PagePaging } from 'src/app/_models/PagePaging';
+import { SearchObject } from 'src/app/_models/SearchObject.model';
+import { PageMenuService } from './page-menu.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateOrEditComponent } from './create-or-edit/create-or-edit.component';
+import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from 'src/app/_common/component/dialog/confirm-dialog/confirm-dialog.service';
+import { ColumnsTable } from 'src/app/_common/component/table/table.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PageMenuCms } from 'src/app/_models/PageMenuCms.model';
+
+@Component({
+  selector: 'page-menu',
+  templateUrl: './page-menu.component.html',
+  styleUrls: ['./page-menu.component.scss']
+})
+export class PageMenuComponent implements OnInit {
+  id: string = null;
+  breadcrumbs?: Breadcrumb[] = [{ text: "Danh mục", link: null }];
+  isLoading = false;
+  columns?: ColumnsTable<PageMenuCms>[] = [];
+  searchForm: FormGroup = null;
+  searchObject: SearchObject = new SearchObject();
+  pagePageMenu: PagePaging<PageMenuCms> = new PagePaging();
+
+  pageMenuParent: PageMenuCms = new PageMenuCms();
+
+  constructor(
+    private service: PageMenuService,
+    private toast: ToastrService,
+    private dialog: MatDialog,
+    private confirmDialog: ConfirmDialogService,
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) { }
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params["id"];
+
+    if (this.id) {
+      this.service.getPageMenu(this.id).subscribe({
+        next: res => this.pageMenuParent = res
+      })
+    }
+
+    this.searchForm = this.fb.group({ text: null });
+    this.columns = [
+      { prop: "name", name: "Tên" },
+      { prop: "code", name: "Mã" },
+      { prop: "action", nameItemHTML: "button", name: "Thao tác" },
+    ]
+    this.pagingPageMenu();
+  }
+
+  pagingPageMenu() {
+    this.isLoading = true;
+    this.service.pagingPageMenu({ ...this.searchObject, parentId: this.id }).subscribe({
+      next: res => this.pagePageMenu = res,
+      complete: () => this.isLoading = false
+    })
+  }
+
+  submitSearch() {
+    this.searchObject.checkSearchObject(this.searchForm.getRawValue());
+    this.pagingPageMenu();
+  }
+
+  setPage(pageInfo) {
+    if (pageInfo.offset >= 0) {
+      this.searchObject.checkSearchObject({ pageIndex: pageInfo.offset + 1 });
+      this.pagingPageMenu();
+    }
+  }
+
+  async openFormCreateOrEditPageMenu(pageMenuId?: string) {
+    let data = new PageMenuCms({ parent: this.pageMenuParent });
+    if (pageMenuId) {
+      data = await this.service.getPageMenu(pageMenuId).toPromise();
+    }
+    this.dialog.open(CreateOrEditComponent, { width: "400px", disableClose: true, data }).afterClosed().subscribe(res => Boolean(res) && this.pagingPageMenu())
+  }
+
+  deletePageMenu(id: string) {
+    this.service.deletePageMenu(id).subscribe({
+      next: (res) => {
+        if (res) {
+          this.toast.success("Xoá bản ghi thành công", "Thông báo");
+          this.pagingPageMenu();
+        }
+      },
+      error: (err) => this.toast.warning("Xoá bản ghi thất bại", "Thông báo"),
+    });
+  }
+
+  handleDeletePageMenu(id: string) {
+    this.confirmDialog.openConfirmDialog({
+      title: "Bạn có chắc muốn xóa bản ghi này?",
+      text: "Bạn sẽ không thể khôi phục bản ghi này!",
+      onYesClick: () => this.deletePageMenu(id),
+    });
+  }
+
+  toRouter(parentId: string) {
+    this.router.navigateByUrl("/admin/page-menu", { skipLocationChange: true }).then(() => this.router.navigate(["/admin/page-menu" + (parentId ? ("/" + parentId) : "")]));
+  }
+}

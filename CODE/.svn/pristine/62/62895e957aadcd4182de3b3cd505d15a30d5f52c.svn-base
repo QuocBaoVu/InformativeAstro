@@ -1,0 +1,35 @@
+<div class="popup-header">
+  <h3>{{!defaults?.id ? 'Thêm mới' : 'Chỉnh sửa'}} bài viết</h3>
+  <button type="button" tabindex="-1" (click)="onClose()">
+    <icon-close></icon-close>
+  </button>
+</div>
+
+<form (submit)="onSubmit()" [formGroup]="form!">
+  <mat-dialog-content class="popup-content p-3">
+    <input-component [control]="f?.title" [required]="true" controlName="title"
+      requiredText="Tiêu đề không được bỏ trống!" label="Tiêu đề"></input-component>
+
+    <input-component [control]="f?.summary" controlName="summary" label="Tóm tắt"></input-component>
+
+    <date-input [control]="f?.publishDate" controlName="publishDate" label="Ngày đăng"></date-input>
+
+    <b>Danh mục</b>
+    <table-component [selection]="true" selectionType="multi" [selectRow]="true" [selected]="f.categories.value || []"
+      (select)="onSelectCategory($event)" [rows]="pageCategory?.content || []" [columns]="columns"
+      [totalElements]="pageCategory?.totalElements" (change)="setPage($event)" [pageIndex]="searchObject.pageIndex"
+      [pageSize]="searchObject.pageSize">
+    </table-component>
+
+    <ckeditor formControlName="content"></ckeditor>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="popup-footer" align="end">
+    <button type="submit" [disabled]="submitted">
+      Lưu
+    </button>
+    <button type="button" (click)="onClose()" [disabled]="submitted">
+      Hủy
+    </button>
+  </mat-dialog-actions>
+</form>

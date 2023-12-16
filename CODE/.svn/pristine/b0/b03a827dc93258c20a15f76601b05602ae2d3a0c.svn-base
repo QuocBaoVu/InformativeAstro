@@ -1,0 +1,72 @@
+<div class="popup-header">
+  <h3>{{!defaults.id ? 'Thêm mới' : 'Chỉnh sửa'}} Menu</h3>
+  <button type="button" tabindex="-1" mat-dialog-close>
+    <icon-close></icon-close>
+  </button>
+</div>
+
+<form (submit)="onSubmit()" [formGroup]="form!">
+  <mat-dialog-content class="popup-content p-3">
+    <input-component [control]="f.name" controlName="name" [required]="true" requiredText="Tên không được bỏ trống!"
+      label="Tên"></input-component>
+
+    <input-component [control]="f.code" controlName="code" [required]="true" requiredText="Mã không được bỏ trống!"
+      label="Mã"></input-component>
+
+    <select-component 
+      [options]="listType" 
+      [control]="f.type" 
+      controlName="type" 
+      [required]="true"
+      requiredText="Loại không được bỏ trống!" 
+      label="Loại"
+    ></select-component>
+
+    <input-component 
+      *ngIf="checkTypeMenuUrl" 
+      [control]="f.linkUrl" 
+      controlName="linkUrl" 
+      type="url" 
+      label="Link"
+      [required]="true" 
+      requiredText="Link không được để trống!"
+    ></input-component>
+
+    <select-component 
+      *ngIf="checkTypeMenuCategory" 
+      [control]="f.linkUrl" 
+      controlName="linkUrl" 
+      label="Danh mục"
+      [required]="true" 
+      requiredText="Danh mục không được để trống!" 
+      [options]="listCategory" 
+      bindValue="slug"
+      bindLabel="title"
+    ></select-component>
+
+    <select-component 
+      *ngIf="checkTypeMenuArticles" 
+      [control]="f.linkUrl" 
+      controlName="linkUrl" 
+      label="Bài viết"
+      [required]="true"
+      requiredText="Bài viết không được để trống" 
+      [options]="listArticle" 
+      bindValue="slug"
+      bindLabel="title"
+    ></select-component>
+
+    <input-component [control]="f.positionIndex" controlName="positionIndex" type="number"
+      label="Thứ tự hiển thị"></input-component>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="popup-footer" align="end">
+    <button type="submit">
+      Lưu
+    </button>
+    <button type="button" mat-dialog-close>
+      Hủy
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,79 @@
+<div class="popup-header">
+  <h3>{{!defaults?.id ? 'Thêm mới' : 'Chỉnh sửa'}} bài viết</h3>
+  <button type="button" tabindex="-1" mat-dialog-close>
+    <icon-close></icon-close>
+  </button>
+</div>
+
+<form (submit)="onSubmit()" [formGroup]="form!">
+  <mat-dialog-content class="popup-content p-3">
+    <grid [container]="true">
+      <grid [md]="9">
+        <input-component [control]="f?.title" [required]="true" controlName="title"
+          requiredText="Tiêu đề không được bỏ trống!" label="Tiêu đề"></input-component>
+
+        <input-component [control]="f?.realAuthor" controlName="realAuthor" label="Tác giả"></input-component>
+
+        <date-input [control]="f?.publishDate" controlName="publishDate" label="Ngày đăng"></date-input>
+
+        <input-component [control]="f?.slug" controlName="slug" label="Đường dẫn" [readonly]="true"></input-component>
+        
+        <input-component [control]="f?.positionIndex" controlName="positionIndex" label="Thứ tự hiển thị"></input-component>
+
+        <div class="flex items-center gap-4">
+          <label class="m-0 flex items-center gap-1 cursor-pointer">
+            <input formControlName="isActive" type="checkbox" />
+            Sử dụng
+          </label>
+
+          <label class="m-0 flex items-center gap-1 cursor-pointer">
+            <input formControlName="plugInTheFocus" type="checkbox" />
+            Ghi bài viết
+          </label>
+
+          <label class="m-0 flex items-center gap-1 cursor-pointer">
+            <input formControlName="plugInTheItem" type="checkbox" />
+            Hiển thị slider
+          </label>
+
+          <label class="m-0 flex items-center gap-1 cursor-pointer">
+            <input formControlName="notShowHome" type="checkbox" />
+            Ẩn khỏi danh mục
+          </label>
+        </div>
+
+        <select-component [control]="f?.primaryCategory" controlName="primaryCategory" label="Danh mục chính"
+          [options]="pageCategory.content" bindLabel="title" [objectValue]="true" class="mt-2"></select-component>
+      </grid>
+
+      <grid [md]="3" class="element-center">
+        <label class="text-center">
+          <input type='file' (change)="uploadImage($event)" accept=".svg, .jpg, .png" class="hidden" />
+          <div [ngStyle]="{'background-image': f.titleImageUrl.value ? ('url(' + f.titleImageUrl.value + ')') :''}"
+            class="p-5em bg-p-center bg-s-cover"></div>
+          Ảnh bài viết
+        </label>
+      </grid>
+    </grid>
+
+    <b>Danh mục</b>
+    <table-component [selection]="true" selectionType="multi" [selectRow]="true"
+      [selected]="f.categoryArticle.value || []" (select)="onSelectCategory($event)" [rows]="listCategoryTable || []"
+      [columns]="columns" [totalElements]="pageCategory?.totalElements" (change)="setPage($event)"
+      [pageIndex]="searchObject.pageIndex" [pageSize]="searchObject.pageSize">
+    </table-component>
+
+    <input-component [control]="f?.summary" controlName="summary" label="Tóm tắt" [textArea]="true"></input-component>
+
+    <ckeditor formControlName="content"></ckeditor>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="popup-footer" align="end">
+    <button type="submit">
+      Lưu
+    </button>
+    <button type="button" mat-dialog-close>
+      Hủy
+    </button>
+  </mat-dialog-actions>
+</form>

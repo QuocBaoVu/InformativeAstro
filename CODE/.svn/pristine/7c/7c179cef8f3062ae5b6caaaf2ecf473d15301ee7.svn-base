@@ -1,0 +1,48 @@
+package com.globits.hivhis.dto.home;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HomePageDto {
+    private List<ArticleViewDto> articleSlider = new ArrayList<>();
+    private ArticleViewDto article;
+    private List<ArticleViewDto> listArticle = new ArrayList<>();
+    private List<CategoryViewDto> listCategory = new ArrayList<>();
+    // tin tuc - thong bao - phan hieu khoa - dao tao - doi ngoai - nghien cuu - sinh vien
+
+    public HomePageDto() {
+
+    }
+
+    public List<ArticleViewDto> getArticleSlider() {
+        return articleSlider;
+    }
+
+    public void setArticleSlider(List<ArticleViewDto> articleSlider) {
+        this.articleSlider = articleSlider;
+    }
+
+    public ArticleViewDto getArticle() {
+        return article;
+    }
+
+    public void setArticle(ArticleViewDto article) {
+        this.article = article;
+    }
+
+    public List<ArticleViewDto> getListArticle() {
+        return listArticle;
+    }
+
+    public void setListArticle(List<ArticleViewDto> listArticle) {
+        this.listArticle = listArticle;
+    }
+
+    public List<CategoryViewDto> getListCategory() {
+        return listCategory;
+    }
+
+    public void setListCategory(List<CategoryViewDto> listCategory) {
+        this.listCategory = listCategory;
+    }
+}

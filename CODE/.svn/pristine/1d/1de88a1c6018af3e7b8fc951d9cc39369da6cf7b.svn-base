@@ -1,0 +1,27 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { CmsArticle } from 'src/app/_models/CmsArticle.model';
+import { PageUserService } from '../pages-user.service';
+import { MenuHeader } from 'src/app/_models/MenuHeader.model';
+
+@Component({
+    selector: 'article',
+    templateUrl: './article.component.html',
+    //   styleUrls: ['./article.component.scss']
+})
+export class ArticleComponent implements OnInit {
+    listMenuHeader?: Array<MenuHeader> = new Array();
+    slug: string = null;
+    article?: CmsArticle = null;
+    constructor(private service: PageUserService, private route: ActivatedRoute) { }
+
+    ngOnInit(): void {
+        this.slug = this.route.snapshot.params["slug"];
+        this.service.getMenuHeader().subscribe(res => this.listMenuHeader = res);
+        if (this.slug) {
+            this.service.getArticleBySlug(this.slug).subscribe({
+                next: res => this.article = new CmsArticle(res),
+            })
+        }
+    }
+}

@@ -1,0 +1,43 @@
+button.btn-container {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    gap: 5px;
+    padding: 5px 10px;
+    color: #FFFFFF;
+    background-color: #006778;
+
+    &:hover {
+        background-color: #338593;
+    }
+
+    &[color=green-outline] {
+        color: #FFFFFF;
+        background-color: #006778;
+
+        svg {
+            path {
+                fill: #FFFFFF;
+            }
+        }
+
+        &:hover {
+            background-color: #338593;
+        }
+    }
+
+    &[color=second] {
+        color: #FFFFFF;
+        background-color: #006778;
+
+        svg {
+            path {
+                fill: #FFFFFF;
+            }
+        }
+
+        &:hover {
+            background-color: #338593;
+        }
+    }
+}

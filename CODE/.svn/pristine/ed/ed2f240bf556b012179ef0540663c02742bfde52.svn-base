@@ -1,0 +1,55 @@
+import { Component, Inject } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
+import { PageMenuService } from '../page-menu.service';
+import { PageMenuCms } from 'src/app/_models/PageMenuCms.model';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { LIST_TYPE_PAGE_MENU, TypeMenu } from 'src/app/_common/constant/local-constant';
+
+@Component({
+  selector: 'create-or-edit',
+  templateUrl: './create-or-edit.component.html',
+  host: {
+    class: "popup-container"
+  }
+})
+export class CreateOrEditComponent {
+  form: FormGroup = PageMenuCms.getDataForm(this.defaults);
+
+  listType = LIST_TYPE_PAGE_MENU;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public defaults: PageMenuCms,
+    private dialogRef: MatDialogRef<CreateOrEditComponent>,
+    private service: PageMenuService,
+    private toast: ToastrService,
+    private loading: NgxSpinnerService
+  ) { }
+
+  get f() {
+    return this.form.controls;
+  }
+
+  get checkTypeMenuUrl() {
+    return this.f.type.value === TypeMenu.URL;
+  }
+
+  onSubmit() {
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.loading.show();
+
+    const pageMenu = this.form.getRawValue() as PageMenuCms;
+    this.service.savePageMenu(pageMenu).subscribe({
+      next: (response) => {
+        this.dialogRef.close(response);
+        this.toast.success(!this.defaults?.id ? "Thêm mới thành công!" : "Cập nhật thành công!");
+      },
+      error: () => this.toast.error(!this.defaults?.id ? "Thêm mới thất bại!" : "Cập nhật thất bại!"),
+      complete: () => this.loading.hide(),
+    });
+  }
+}

@@ -1,0 +1,57 @@
+#main-menu {
+    background-color: #0a1f77;
+    background-image: none;
+    width: 100%;
+    display: block;
+    transition: all .3s ease-out;
+
+    ul {
+        position: relative;
+        margin: 0;
+
+        li {
+            display: block;
+            padding-right: 1px;
+            position: relative;
+
+            &:hover >ul.sub-menu {
+                opacity: 1;
+                visibility: visible;
+                top: 100%;
+            }
+
+            a {
+                display: block;
+                color:  $color-white;
+                font-size: 16px;
+                padding: 0 15px;
+                outline: none;
+                text-decoration: none;
+                text-transform: uppercase;
+                font-family: 'Roboto Condensed', sans-serif;
+                line-height: 47px;
+
+                &:hover {
+                    background-color: $color-blue;
+                }
+            }
+        }
+
+        &.sub-menu {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            width: 255px;
+            background-color: $color-blue;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .2s ease-out;
+        }
+
+        &.menu {
+            margin: auto;
+            @include element-center;
+        }
+    }
+}

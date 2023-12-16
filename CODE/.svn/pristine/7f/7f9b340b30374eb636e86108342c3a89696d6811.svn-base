@@ -1,0 +1,19 @@
+import { Component, OnInit } from '@angular/core';
+import { HomeService } from './home.service';
+import { MenuHeader } from 'src/app/_models/MenuHeader.model';
+
+@Component({
+  selector: 'home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss']
+})
+export class HomeComponent implements OnInit {
+
+  listMenuHeader?: Array<MenuHeader> = new Array();
+
+  constructor(private service: HomeService) { }
+
+  ngOnInit(): void {
+    this.service.getMenuHeader().subscribe(res => this.listMenuHeader = res);
+  }
+}

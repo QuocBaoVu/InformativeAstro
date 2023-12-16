@@ -1,0 +1,28 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CategoryComponent } from './category.component';
+import { VexRoutes } from 'src/@vex/interfaces/vex-route.interface';
+import { RouterModule } from '@angular/router';
+import { BreadcrumbsModule } from 'src/app/_common/component/breadcrumbs/breadcrumbs.module';
+import { GridModule } from 'src/app/_common/component/grid/grid.module';
+import { IconModule } from 'src/app/_common/Icon/icon.module';
+import { TableModule } from 'src/app/_common/component/table/table.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CreateOrEditComponent } from './create-or-edit/create-or-edit.component';
+
+const routes: VexRoutes = [{ path: "", component: CategoryComponent }];
+
+@NgModule({
+  declarations: [CategoryComponent, CreateOrEditComponent],
+  imports: [
+    BreadcrumbsModule,
+    GridModule,
+    IconModule,
+    TableModule,
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+  ],
+  exports: [RouterModule]
+})
+export class CategoryModule { }

@@ -1,0 +1,47 @@
+package com.globits.hivhis.service;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+
+import com.globits.hivhis.domain.CmsCategory;
+import com.globits.hivhis.dto.CmsCategoryDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.core.service.GenericService;
+
+public interface CmsCategoryService extends GenericService<CmsCategory, UUID> {
+    //	NDuc start
+    CmsCategoryDto getCmsCategory(UUID id);
+
+    CmsCategoryDto saveCmsCategory(CmsCategoryDto dto);
+
+    Boolean deleteCmsCategory(UUID id);
+
+    Page<CmsCategoryDto> paging(SearchDto dto);
+    // NDuc end
+
+    Page<CmsCategoryDto> getPageCmsCategoryDto(int pageIndex, int pageSize);
+
+    CmsCategoryDto getCmsCategoryDtoByCmsCategoryId(UUID categoryId);
+
+    CmsCategoryDto saveCmsCategory(CmsCategoryDto dto, UUID id);
+
+    Boolean deleteCategoryById(UUID id);
+
+    Page<CmsCategoryDto> getCmsCategoryBySearch(SearchDto search);
+
+    Page<CmsCategoryDto> getPageCmsCategoryDtoByPublishAPI(int pageIndex, int pageSize);
+
+    List<CmsCategoryDto> getAllByParentNull();
+
+    Boolean deleteCheckById(UUID id);
+
+    List<CmsCategoryDto> getAllByParentNull(Boolean getIsHoverArticle);
+
+    List<UUID> getAllCategoryIdByParentId(UUID parentId);
+
+    Page<CmsCategoryDto> cmsCategoryBySearch(SearchDto search);
+
+    public CmsCategoryDto getOne(UUID id);
+}

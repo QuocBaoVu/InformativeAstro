@@ -1,0 +1,52 @@
+package com.globits.hivhis;
+
+public class Const {
+	public static String PathFileImage = null; 
+	public enum ObjectMapType 
+	{
+		CATEGORY("CATEGORY"), 
+		ARTICLE("ARTICLE");
+	 
+	    private String value;
+	 
+	    ObjectMapType(String value) {
+	        this.value = value;
+	    }
+	 
+	    public String getValue() {
+	        return value;
+	    }
+	}
+
+	public static enum ArticleStatus{
+		AwaitingRemoved(-2),	//Chờ gỡ
+		Removed(-1),	//Đã gỡ
+		Draft(0),//Bản nháp
+		AwaitingApproval(1),//Chờ duyệt
+		Approved(2),	//Đã duyệt
+		WaitingPost(3),	//Chờ đăng
+		AlreadyPosted(4), //Đã đăng
+		Publish(5);		//Xuất bản
+		
+		private Integer value;
+		private ArticleStatus(Integer value) {
+		    this.value = value;
+		}
+		public Integer getValue() {
+			return value;
+		}
+	}
+	public static enum CategoryType{
+		
+		ListArticle(1),	//Danh sách bài báo
+		Link(2);	//Link
+		
+		private Integer value;
+		private CategoryType(Integer value) {
+		    this.value = value;
+		}
+		public Integer getValue() {
+			return value;
+		}
+	}
+}

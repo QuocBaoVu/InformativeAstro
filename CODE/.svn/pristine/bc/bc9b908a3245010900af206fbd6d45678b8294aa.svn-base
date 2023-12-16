@@ -1,0 +1,28 @@
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { Website } from "./Website.model";
+
+export class PageMenuCms {
+    serialVersionUID?: number = null;
+    code?: string = null;
+    name?: string = null;
+    linkUrl?: string = null;
+    parent?: PageMenuCms = null;
+    subPageMenu?: PageMenuCms[] = [];
+    website?: Website = null;
+    type?: string = null;
+    id?: string = null;
+
+    constructor(value?: PageMenuCms) {
+        Object.assign(this, value);
+    }
+
+    static getDataForm = (value: PageMenuCms) => (
+        new FormGroup({
+            id: new FormControl(value.id),
+            name: new FormControl(value.name, [Validators.required]),
+            code: new FormControl(value.code, [Validators.required]),
+            type: new FormControl(value.type, [Validators.required]),
+            parent: new FormControl(value.parent)
+        })
+    )
+}

@@ -1,0 +1,19 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { PageMenuCms } from 'src/app/_models/PageMenuCms.model';
+import { PagePaging } from 'src/app/_models/PagePaging';
+import { ConfigInitService } from 'src/app/init/config-init.service';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class HomeService {
+
+    private readonly END_POINT = this.configInitService.apiBaseUrl + "/public";
+
+    constructor(private http: HttpClient, private configInitService: ConfigInitService) { }
+
+    getHomePage() {
+        return this.http.get<PagePaging<PageMenuCms>>(this.END_POINT + "/get-home-page", { responseType: "json" });
+    }
+}

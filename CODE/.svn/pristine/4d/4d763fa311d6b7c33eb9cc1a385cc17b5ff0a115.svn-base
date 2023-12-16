@@ -1,0 +1,10 @@
+import {NavigationItem} from "src/@vex/interfaces/navigation-item.interface";
+
+export const navigationVAAC: NavigationItem[] = [
+
+];
+
+//1: tk VAAC 2:tk khu vuc 3:tk tinh 4:dvtt tnh 5: tk huyen 6:dvtt huyen 7:tk xa
+export const navigation: NavigationItem[] = [
+
+];

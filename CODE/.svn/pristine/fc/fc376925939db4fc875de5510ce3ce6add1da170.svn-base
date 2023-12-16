@@ -1,0 +1,97 @@
+package com.globits.hivhis.dto;
+
+import java.util.Date;
+import java.util.UUID;
+
+public class CmsSearchDto {
+    private Integer pageIndex;
+    private Integer pageSize;
+    private String textSearch;
+    private UUID parentId;
+    private UUID categoryId;
+    private Date fromDate;
+    private Date toDate;
+    private Integer status;
+    private Integer websiteId;
+    private boolean isGetChild = false;
+
+    public Integer getPageIndex() {
+        return pageIndex;
+    }
+
+    public void setPageIndex(Integer pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getWebsiteId() {
+        return websiteId;
+    }
+
+    public void setWebsiteId(Integer websiteId) {
+        this.websiteId = websiteId;
+    }
+
+    public String getTextSearch() {
+        return textSearch;
+    }
+
+    public void setTextSearch(String textSearch) {
+        this.textSearch = textSearch;
+    }
+
+    public boolean isGetChild() {
+        return isGetChild;
+    }
+
+    public void setGetChild(boolean getChild) {
+        isGetChild = getChild;
+    }
+}

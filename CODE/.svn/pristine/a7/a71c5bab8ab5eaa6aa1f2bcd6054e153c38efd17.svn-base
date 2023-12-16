@@ -1,0 +1,39 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { CmsArticle } from 'src/app/_models/CmsArticle.model';
+import { PageUserService } from '../pages-user.service';
+import { MenuHeader } from 'src/app/_models/MenuHeader.model';
+import { CategoryView } from 'src/app/_models/CmsCategory.model';
+
+@Component({
+    selector: 'article',
+    templateUrl: './article.component.html',
+    //   styleUrls: ['./article.component.scss']
+})
+export class ArticleComponent implements OnInit {
+    slug: string = null;
+    category: string = null;
+    article?: CmsArticle = null;
+    cateGoryView?: CategoryView = null;
+    listMenuHeader?: Array<MenuHeader> = new Array();
+
+    constructor(private service: PageUserService, private route: ActivatedRoute) { }
+
+    ngOnInit(): void {
+        this.slug = this.route.snapshot.params["slug"];
+        this.category = this.route.snapshot.params["category"];
+
+        this.service.getMenuHeader().subscribe(res => this.listMenuHeader = res);
+        if (this.slug) {
+            this.service.getArticleBySlug(this.slug).subscribe({
+                next: res => this.article = new CmsArticle(res),
+            })
+        }
+
+        if(this.category) {
+            this.service.getCategoryBySlug(this.category).subscribe({
+                next: res => this.cateGoryView = res,
+            })
+        }
+    }
+}

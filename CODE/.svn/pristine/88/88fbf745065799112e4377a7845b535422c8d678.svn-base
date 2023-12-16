@@ -1,0 +1,545 @@
+package com.globits.hivhis.service.impl;
+
+import com.globits.core.service.impl.GenericServiceImpl;
+import com.globits.hivhis.Const;
+import com.globits.hivhis.domain.CmsCategory;
+import com.globits.hivhis.domain.CmsMapObject;
+import com.globits.hivhis.domain.Website;
+import com.globits.hivhis.dto.CmsArticleDto;
+import com.globits.hivhis.dto.CmsCategoryDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.hivhis.repository.CmsArticleRepsitory;
+import com.globits.hivhis.repository.CmsCategoryRepository;
+import com.globits.hivhis.repository.CmsMapObjectRepository;
+import com.globits.hivhis.repository.WebsiteRepository;
+import com.globits.hivhis.service.CmsCategoryService;
+import com.globits.hivhis.util.Utils;
+import com.globits.hivhis.util.VNCharacterUtils;
+import com.globits.security.domain.User;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class CmsCategoryServiceImpl extends GenericServiceImpl<CmsCategory, UUID> implements CmsCategoryService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CmsCategoryServiceImpl.class);
+	@Autowired
+	private CmsCategoryRepository cmsCategoryRepository;
+	@Autowired
+	private CmsArticleRepsitory cmsArticleRepsitory;
+	@Autowired
+	private CmsMapObjectRepository cmsMapObjectRepository;
+	@Autowired
+	WebsiteRepository websiteRepository;
+	@Override
+	public Page<CmsCategoryDto> getPageCmsCategoryDto(int pageIndex, int pageSize) {
+		if (pageIndex > 0) {
+			pageIndex--;
+		} else {
+			pageIndex = 0;
+		}
+		Pageable pageable =PageRequest.of(pageIndex, pageSize);
+		return cmsCategoryRepository.getPageCmsCategoryDto(pageable);
+	}
+
+	@Override
+	public CmsCategoryDto getCmsCategoryDtoByCmsCategoryId(UUID categoryId) {
+		return cmsCategoryRepository.getCmsCategoryDtoByCmsCategoryId(categoryId);
+	}
+
+	@Override
+	public CmsCategoryDto saveCmsCategory(CmsCategoryDto dto, UUID id) {
+		if (dto != null) {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			User modifiedUser = null;
+			LocalDateTime currentDate = LocalDateTime.now();
+			String currentUserName = "Unknown User";
+			if (authentication != null) {
+				modifiedUser = (User) authentication.getPrincipal();
+				currentUserName = modifiedUser.getUsername();
+			}
+			CmsCategory cmsCategory = null;
+			if (id != null) {
+				cmsCategory = cmsCategoryRepository.getOne(id);
+			} else {
+				if (dto.getId() != null) {
+					cmsCategory = cmsCategoryRepository.getOne(dto.getId());
+				}
+			}
+			if (cmsCategory == null) {
+				cmsCategory = new CmsCategory();
+			}
+			cmsCategory.setDescription(dto.getDescription());
+			cmsCategory.setTitle(dto.getTitle());
+			cmsCategory.setIsViewOnHover(dto.getIsViewOnHover());
+			cmsCategory.setPageIndex(dto.getPageIndex());
+			cmsCategory.setPageSize(dto.getPageSize());
+			CmsCategory parent = null;
+			if(dto.getParent() != null && dto.getParent().getId() != null) {
+				parent  = cmsCategoryRepository.getOne(dto.getParent().getId());
+			}
+			Website website = null;
+			if(dto.getWebsite() != null && dto.getWebsite().getId() != null) {
+				website = websiteRepository.getOne(dto.getWebsite().getId());
+			}
+			cmsCategory.setWebsite(website);
+			cmsCategory.setCode(dto.getCode());
+			cmsCategory.setParent(parent);
+			cmsCategory.setSlug(dto.getSlug());
+			cmsCategory.setIsActive(dto.getIsActive());
+			cmsCategory.setIsShowMenu(dto.getIsShowMenu());
+			cmsCategory.setPositionIndex(dto.getPositionIndex());
+			if(cmsCategory.getTitle()!=null) {
+				CmsMapObject mapObject = cmsCategory.getMapObject();
+				if(cmsCategory.getMapObject()==null) {				
+					mapObject = new CmsMapObject();
+				}
+				String slug = VNCharacterUtils.replaceAndRemoveSpace(cmsCategory.getTitle());
+				mapObject.setObjectType(Const.ObjectMapType.CATEGORY.getValue());
+				mapObject.setSlug(slug);
+				mapObject.setCategory(cmsCategory);
+				cmsCategory.setMapObject(mapObject);
+			}
+			cmsCategory.setCategoryType(dto.getCategoryType());
+			cmsCategory.setDisplayType(dto.getDisplayType());
+//			if(cmsCategory.getCategoryType()!=null &&cmsCategory.getCategoryType().equals(Const.CategoryType.ListArticle.getValue()) ) {
+//				//nếu là danh sách bài báo set link về null;
+//				cmsCategory.setLinkUrl(null);
+//			}
+			cmsCategory.setLinkUrl(dto.getLinkUrl());
+			
+			CmsCategory category = cmsCategoryRepository.save(cmsCategory);
+			return new CmsCategoryDto(category);
+		}
+		return null;
+	}
+
+	@Override
+	public Boolean deleteCategoryById(UUID id) {
+		if (id != null) {
+			CmsCategory entity = cmsCategoryRepository.getOne(id);
+			if(entity != null) {
+			try {
+				cmsMapObjectRepository.deleteById(entity.getMapObject().getId());
+				cmsCategoryRepository.deleteById(id);
+				return true;
+			} catch (Exception e) {
+				LOGGER.debug("Lỗi xóa category theo id=" + id, e);
+				return false;
+			}
+		}
+		}
+		return null;
+	}
+
+	@Override
+	public Page<CmsCategoryDto> getCmsCategoryBySearch(SearchDto search) {
+		int pageIndex = search.getPageIndex();
+		int pageSize = search.getPageSize();
+		if (pageIndex > 0) {
+			pageIndex--;
+		} else {
+			pageIndex = 0;
+		}
+		Pageable pageable =PageRequest.of(pageIndex, pageSize);
+		String sql = "select new com.globits.hivhis.dto.CmsCategoryDto(c) from CmsCategory c where 1=1  ";
+		String sqlCount = "select count(*) from CmsCategory c where 1=1  ";
+		String whereHasTitle = " and c.title like :title";
+		String whereHasDescription = " and c.description like :description";
+		String whereWebsite = "and c.website.id =: websiteId";
+
+		boolean isTitle = !Utils.isBlank(search.getTitle());
+		boolean isDescription = !Utils.isBlank(search.getDescription());
+		if(!Utils.isBlank(search.getKeyword())) {
+			sql += " and (c.title like :keyword or c.slug like :keyword) ";
+			sqlCount += " and (c.title like :keyword or c.slug like :keyword) ";
+		}
+		if (isTitle) {
+			sql += whereHasTitle;
+			sqlCount += whereHasTitle;
+		}
+
+		if (isDescription) {
+			sql += whereHasDescription;
+			sqlCount += whereHasDescription;
+		}
+		if(search.getWebsiteId() !=null) {
+			sql += whereWebsite;
+			sqlCount += whereWebsite;
+		}
+
+
+		Query query = manager.createQuery(sql, CmsCategoryDto.class);
+		Query queryCount = manager.createQuery(sqlCount);
+		query.setMaxResults(pageSize);
+		query.setFirstResult(pageIndex * pageSize);
+		if(!Utils.isBlank(search.getKeyword())) {
+			query.setParameter("keyword", "%"+search.getKeyword()+"%");
+			queryCount.setParameter("keyword", "%"+search.getKeyword()+"%");
+		}
+		if (isTitle) {
+			query.setParameter("title", "%"+search.getTitle()+"%");
+			queryCount.setParameter("title", "%"+search.getTitle()+"%");
+		}
+
+		if (isDescription) {
+			query.setParameter("title", "%"+search.getDescription()+"%");
+			queryCount.setParameter("title", "%"+search.getDescription()+"%");
+		}
+
+		if(search.getWebsiteId() != null) {
+			query.setParameter("websiteId", search.getWebsiteId());
+			queryCount.setParameter("websiteId",search.getWebsiteId());
+		}
+		
+		List<CmsCategoryDto> content = query.getResultList();
+		Object object = queryCount.getSingleResult();
+		Long total = 0L;
+		if (object != null) {
+			total = (Long) object;
+		}
+		Page<CmsCategoryDto> page = new PageImpl<CmsCategoryDto>(content, pageable, total);
+		return page;
+	}
+
+	//hàm này cho client k check AdministrativeUnit by user login
+	@Override
+	public Page<CmsCategoryDto> getPageCmsCategoryDtoByPublishAPI(int pageIndex, int pageSize) {
+		if (pageIndex > 0) {
+			pageIndex--;
+		} else {
+			pageIndex = 0;
+		}
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		return cmsCategoryRepository.getPageCmsCategoryDto(pageable);
+	}
+
+	@Override
+	public List<CmsCategoryDto> getAllByParentNull() {
+		return cmsCategoryRepository.getListParentIsNull();
+	}
+	@Override
+	public List<CmsCategoryDto> getAllByParentNull(Boolean getIsHoverArticle) {
+		List<CmsCategoryDto> cats=cmsCategoryRepository.getListParentIsNull();
+		List<CmsArticleDto> listArticle = cmsArticleRepsitory.getListCmsArticleDto(getIsHoverArticle);
+		for(CmsCategoryDto cat : cats) {
+			//cmsArticleRepsitory.get
+//			List<CmsArticleDto> listData = new ArrayList<CmsArticleDto>();
+			this.addChildrenOnHover(cat, listArticle);
+		}
+		
+		return cats;
+	}
+
+	@Override
+	public Boolean deleteCheckById(UUID id) {
+
+	if(id != null) {
+	Long parentCategory;
+	Long article;
+	parentCategory = cmsCategoryRepository.findByCategory(id);
+	if(parentCategory ==0) {
+		return true;
+	}
+	article = cmsCategoryRepository.findByArticle(id);
+	if(article ==0) {
+		return true;
+	}
+}
+		return false;
+	}
+	
+	private void addChildrenOnHover( CmsCategoryDto parent,List<CmsArticleDto> listArticle) {
+		if(parent.getParentId() == null) {
+		if(parent.getIsViewOnHover()!=null && parent.getIsViewOnHover()) {
+			List<CmsArticleDto> listData = new ArrayList<CmsArticleDto>();
+			for (CmsArticleDto cmsArticleDto : listArticle) {
+				if(parent.getId().equals(cmsArticleDto.getPrimaryCategory().getId()) ) {
+					listData.add(cmsArticleDto);
+				}
+			}
+			parent.setListArticles(listData);
+		}
+		}
+		if (null != parent.getSubCategories() && parent.getSubCategories().size() > 0) {
+			for (CmsCategoryDto child : parent.getSubCategories()) {
+				if(child.getIsViewOnHover()!=null && child.getIsViewOnHover()) {
+				List<CmsArticleDto> listData = new ArrayList<CmsArticleDto>();
+				for (CmsArticleDto cmsArticleDto : listArticle) {
+					if(child.getId().equals(cmsArticleDto.getPrimaryCategory().getId()) ) {
+						listData.add(cmsArticleDto);
+					}
+				}
+				child.setListArticles(listData);
+			}
+				addChildrenOnHover(child,listArticle);
+			}
+		}
+	}
+	
+	@Override
+	public List<UUID> getAllCategoryIdByParentId(UUID parentId) {
+		CmsCategory parent = cmsCategoryRepository.getOne(parentId);
+		if (parent != null && parent.getId() != null) {
+			List<UUID> ret = new ArrayList<UUID>();
+			List<CmsCategory> children = new ArrayList<>();
+
+			ret.add(parent.getId());
+
+			this.addChildren(parent, children);
+			if (children != null && children.size() > 0) {
+				for (CmsCategory dp : children) {
+					ret.add(dp.getId());
+				}
+			}
+			return ret;
+		}
+		return null;
+	}
+	
+	private void addChildren(CmsCategory parent, List<CmsCategory> children) {
+		if (null != parent.getSubCategories()) {
+			for (CmsCategory child : parent.getSubCategories()) {
+				children.add(child);
+				addChildren(child, children);
+			}
+		}
+	}
+
+	@Override
+	public Page<CmsCategoryDto> cmsCategoryBySearch(SearchDto search) {
+		int pageIndex = search.getPageIndex();
+		int pageSize = search.getPageSize();
+		if (pageIndex > 0) {
+			pageIndex--;
+		} else {
+			pageIndex = 0;
+		}
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		String sql = "select  new com.globits.hivhis.dto.CmsCategoryDto(c,true,true) from CmsCategory c where (1=1)   ";
+		String sqlCount = "select count( c.id) from CmsCategory c where (1=1)  ";
+		String whereHasTitle = " and c.title like :title";
+		String whereHasDescription = " and c.description like :description";
+		String whereWebsite = "and c.website.id =: websiteId";
+
+		boolean isTitle = !Utils.isBlank(search.getTitle());
+		boolean isDescription = !Utils.isBlank(search.getDescription());
+		if(!Utils.isBlank(search.getKeyword())) {
+			sql += " and (c.title like :keyword or c.slug like :keyword) ";
+			sqlCount += " and (c.title like :keyword or c.slug like :keyword) ";
+		}
+		else {
+			sql += " and c.parent.id is null ";
+			sqlCount += " and c.parent.id is null ";
+		}
+		if (isTitle) {
+			sql += whereHasTitle;
+			sqlCount += whereHasTitle;
+		}
+
+		if (isDescription) {
+			sql += whereHasDescription;
+			sqlCount += whereHasDescription;
+		}
+		if(search.getWebsiteId() !=null) {
+			sql += whereWebsite;
+			sqlCount += whereWebsite;
+		}
+
+
+		Query query = manager.createQuery(sql, CmsCategoryDto.class);
+		Query queryCount = manager.createQuery(sqlCount);
+		query.setMaxResults(pageSize);
+		query.setFirstResult(pageIndex * pageSize);
+		if(!Utils.isBlank(search.getKeyword())) {
+			query.setParameter("keyword", "%"+search.getKeyword()+"%");
+			queryCount.setParameter("keyword", "%"+search.getKeyword()+"%");
+		}
+		if (isTitle) {
+			query.setParameter("title", "%"+search.getTitle()+"%");
+			queryCount.setParameter("title", "%"+search.getTitle()+"%");
+		}
+
+		if (isDescription) {
+			query.setParameter("title", "%"+search.getDescription()+"%");
+			queryCount.setParameter("title", "%"+search.getDescription()+"%");
+		}
+
+		if(search.getWebsiteId() != null) {
+			query.setParameter("websiteId", search.getWebsiteId());
+			queryCount.setParameter("websiteId",search.getWebsiteId());
+		}
+		
+		List<CmsCategoryDto> content = query.getResultList();
+		Object object = queryCount.getSingleResult();
+		Long total = 0L;
+		if (object != null) {
+			total = (Long) object;
+		}
+		Page<CmsCategoryDto> page = new PageImpl<CmsCategoryDto>(content, pageable, total);
+		return page;
+	}
+
+	@Override
+	public CmsCategoryDto getOne(UUID id) {
+		CmsCategory entity = cmsCategoryRepository.getOne(id); 
+		if(entity != null)
+			return new CmsCategoryDto(entity);
+
+		return null;
+	}
+
+	@Override
+	public CmsCategoryDto getCmsCategory(UUID id) {
+		if(id != null) {
+			CmsCategory category = cmsCategoryRepository.findById(id).orElse(null);
+			if(category != null) {
+				return new CmsCategoryDto(category);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public CmsCategoryDto saveCmsCategory(CmsCategoryDto dto) {
+		if(dto == null) {
+			return null;
+		}
+		CmsCategory category = null;
+		if(dto.getId() != null) {
+			category = cmsCategoryRepository.findById(dto.getId()).orElse(null);
+		}
+		if(category == null) {
+			category = new CmsCategory();
+		}
+		category.setTitle(dto.getTitle());
+		category.setCode(dto.getCode());
+		category.setDescription(dto.getDescription());
+		category.setSlug(dto.getSlug());
+		category.setIsActive(dto.getIsActive());
+		category.setIsShowMenu(dto.getIsShowMenu());
+		category.setPositionIndex(dto.getPositionIndex());
+		category.setIsViewOnHover(dto.getIsViewOnHover());
+		category.setCategoryType(dto.getCategoryType());
+		category.setDisplayType(dto.getDisplayType());
+		category.setLinkUrl(dto.getLinkUrl());
+		category.setPageIndex(dto.getPageIndex());
+		category.setPageSize(dto.getPageSize());
+		CmsCategory parent = null;
+		if(dto.getParentId() != null) {
+			parent = cmsCategoryRepository.findById(dto.getParent().getId()).orElse(null);
+		}
+		category.setParent(parent);
+		Website website = null;
+		if(dto.getWebsite() != null && dto.getWebsite().getId() != null) {
+			website = websiteRepository.findById(dto.getWebsite().getId()).orElse(null);
+		}
+		category.setWebsite(website);
+		if(category.getTitle() != null) {
+			CmsMapObject mapObject = category.getMapObject();
+			if(category.getMapObject()==null) {
+				mapObject = new CmsMapObject();
+			}
+			String slug = VNCharacterUtils.replaceAndRemoveSpace(category.getTitle());
+			mapObject.setObjectType(Const.ObjectMapType.CATEGORY.getValue());
+			mapObject.setSlug(slug);
+			mapObject.setCategory(category);
+			category.setMapObject(mapObject);
+		}
+		category = cmsCategoryRepository.save(category);
+		return new CmsCategoryDto(category);
+	}
+
+	@Override
+	public Boolean deleteCmsCategory(UUID id) {
+		if(id != null) {
+			CmsCategory category = cmsCategoryRepository.findById(id).orElse(null);
+			if(category != null) {
+				if(category.getSubCategories() != null && category.getSubCategories().size() > 0) {
+					for(CmsCategory subCategory : category.getSubCategories()) {
+						cmsCategoryRepository.deleteById(subCategory.getId());
+					}
+				}
+				cmsCategoryRepository.deleteById(id);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Page<CmsCategoryDto> paging(SearchDto dto) {
+		if(dto == null) {
+			return null;
+		}
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0) {
+			pageIndex--;
+		} else {
+			pageIndex = 0;
+		}
+		String hql = "select new com.globits.hivhis.dto.CmsCategoryDto(e) from CmsCategory e ";
+		String hqlCount = "select count(e) from CmsCategory e ";
+		String whereClause = " where (1=1) ";
+		String orderBy = " order by e.modifyDate";
+		if(dto.getParentId() != null) {
+			whereClause += " and (e.parent.id = :parentId) ";
+		} else {
+			whereClause += " and (e.parent is null) ";
+		}
+		if(dto.getTitle() != null) {
+			whereClause += " and (e.title like :title) ";
+		}
+		if(dto.getDescription() != null) {
+			whereClause += " and (e.description like :description) ";
+		}
+		if(dto.getWebsiteId() != null) {
+			whereClause += " and (e.website.id like :websiteId) ";
+		}
+		if(dto.getKeyword() != null) {
+			whereClause += " and (e.code like :keyword or e.slug like :keyword) ";
+		}
+		hql += whereClause + orderBy;
+		hqlCount += whereClause;
+        Query query = manager.createQuery(hql, CmsCategoryDto.class);
+        Query queryCount = manager.createQuery(hqlCount);
+		if(dto.getParentId() != null) {
+			query.setParameter("parentId", dto.getParentId());
+			queryCount.setParameter("parentId", dto.getParentId());
+		}
+		if(dto.getTitle() != null) {
+			query.setParameter("title", dto.getTitle());
+			queryCount.setParameter("title", dto.getTitle());
+		}
+		if(dto.getDescription() != null) {
+			query.setParameter("description", dto.getDescription());
+			queryCount.setParameter("description", dto.getDescription());
+		}
+		if(dto.getWebsiteId() != null) {
+			query.setParameter("websiteId", dto.getWebsiteId());
+			queryCount.setParameter("websiteId", dto.getWebsiteId());
+		}
+		if(dto.getKeyword() != null) {
+			query.setParameter("keyword", dto.getKeyword());
+			queryCount.setParameter("keyword", dto.getKeyword());
+		}
+		List<CmsCategoryDto> result = query.getResultList();
+		long count = (long) queryCount.getSingleResult();
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		return new PageImpl<>(result, pageable, count);
+	}
+}

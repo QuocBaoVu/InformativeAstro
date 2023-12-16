@@ -1,0 +1,195 @@
+package com.globits.hivhis.service.impl;
+
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+import javax.persistence.Query;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.globits.hivhis.domain.Website;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.hivhis.dto.WebsiteDto;
+import com.globits.hivhis.repository.WebsiteRepository;
+import com.globits.hivhis.service.WebsiteService;
+import com.globits.core.domain.Organization;
+import com.globits.core.repository.OrganizationRepository;
+import com.globits.core.service.impl.GenericServiceImpl;
+
+@Service
+public class WebsiteServiceImpl extends GenericServiceImpl<Website, UUID> implements WebsiteService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebsiteServiceImpl.class);
+	@Autowired
+	private WebsiteRepository websiteRepository;
+	
+	@Resource
+	private OrganizationRepository organizationRepository;
+
+	@Override
+	public WebsiteDto getWebsiteById(UUID id) {
+		if(id != null) {
+			Website website = websiteRepository.findById(id).orElse(null);
+			if(website != null) {
+				return new WebsiteDto(website);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public WebsiteDto saveWebsite(WebsiteDto dto) {
+		if(dto == null) {
+			return null;
+		}
+		Website website = null;
+		if(dto.getId() != null) {
+			website = websiteRepository.findById(dto.getId()).orElse(null);
+		}
+		if(website != null) {
+			website = new Website();
+		}
+		return null;
+	}
+
+	@Override
+	public Boolean deleteWebsite(UUID id) {
+		return null;
+	}
+
+	@Override
+	public Boolean duplicateDomain(String domain) {
+		if(domain != null) {
+
+		}
+		return null;
+	}
+
+	@Override
+	public Page<WebsiteDto> paging(SearchDto dto) {
+		return null;
+	}
+
+	@Override
+	public WebsiteDto getWebsite(String domainName) {
+		domainName = domainName.replace("www.", "");
+		return websiteRepository.getWebsite(domainName);
+	}
+	@Override
+	public WebsiteDto saveOrUpdate(WebsiteDto dto,UUID id) {
+		
+		if(dto != null) {
+			Website website = null;
+			if (id != null) {
+				if (dto.getId() != null && !dto.getId().equals(id)) {
+					return null;
+				}
+				website = websiteRepository.getOne(id);
+			}
+			if(website == null) {
+				website = new Website();
+			}
+			Organization organization = null;
+			website.setCode(dto.getCode());
+			website.setName(dto.getName());
+			website.setDomain(dto.getDomain());
+			website.setTemplate(dto.getTemplate());
+			website.setLogoPath(dto.getLogoPath());
+			if(dto.getOrg() != null && dto.getOrg().getId() != null) {
+				organization = organizationRepository.getOne(dto.getOrg().getId());
+			}
+			if (dto.getParent() != null && dto.getParent().getId() != null ) {
+				Website parent = websiteRepository.getOne(dto.getParent().getId());
+				if (parent != null && parent.getId() != null) {
+					website.setParent(parent);
+				}
+			}
+			website.setOrg(organization);
+			website = websiteRepository.save(website);
+			return new WebsiteDto(website);
+		}
+		return null;
+	}
+	@Override
+	public WebsiteDto getOne(UUID id) {
+		Website entity = websiteRepository.getOne(id);
+		if(entity != null) {
+			return new WebsiteDto(entity);
+		}
+		return null;
+	}
+	@Override
+	public void deleteById(UUID id) {
+		websiteRepository.deleteById(id);
+		
+	}
+	@Override
+	public Page<WebsiteDto> searchByPage(SearchDto dto) {
+		if (dto == null) {
+			return null;
+		}
+		
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		
+		if (pageIndex > 0) {
+			pageIndex--;
+		} else {
+			pageIndex = 0;
+		}
+		String whereClause = "";
+		String orderBy = " ORDER BY entity.createDate ";
+		String sqlCount = "select count(entity.id) from Website as entity where (1=1)  ";
+		String sql = "select new com.globits.hivhis.dto.WebsiteDto(entity) from Website as entity where (1=1)  ";
+		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
+			whereClause += " AND ( entity.name LIKE :text  OR entity.code LIKE :text ) ";
+		}
+		sql+=whereClause + orderBy;
+		sqlCount+=whereClause;
+		Query q = manager.createQuery(sql, WebsiteDto.class);
+		Query qCount = manager.createQuery(sqlCount);
+
+		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
+			q.setParameter("text", '%' + dto.getKeyword() + '%');
+			qCount.setParameter("text", '%' + dto.getKeyword() + '%');
+		}
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		List<WebsiteDto> entities = q.getResultList();
+		long count = (long) qCount.getSingleResult();
+		
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		Page<WebsiteDto> result = new PageImpl<WebsiteDto>(entities, pageable, count);
+		return result;
+	}
+	@Override
+	public Boolean checkDuplicateDomain(UUID id, String domain) {
+		if (domain != null && StringUtils.hasText(domain)) {
+			WebsiteDto dto = this.getWebsite(domain);
+			if (dto != null) {
+				if (id != null && dto.getId().equals(id)) {
+					return false;
+				}
+				return true;
+			}
+			return false;
+		}
+		return null;
+	}
+	@Override
+	public Boolean deleteCheckById(UUID id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

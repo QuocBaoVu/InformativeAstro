@@ -1,0 +1,170 @@
+package com.globits.hivhis.service.impl;
+
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.Query;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.globits.hivhis.domain.PageMenuCms;
+import com.globits.hivhis.domain.Website;
+import com.globits.hivhis.dto.PageMenuCmsDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.hivhis.repository.PageMenuCmsRepository;
+import com.globits.hivhis.repository.WebsiteRepository;
+import com.globits.hivhis.service.PageMenuCmsService;
+import com.globits.core.service.impl.GenericServiceImpl;
+
+@Service
+public class PageMenuCmsServiceImpl extends GenericServiceImpl<PageMenuCms, UUID> implements PageMenuCmsService {
+
+	@Autowired
+	private PageMenuCmsRepository pageMenuCmsRepository;
+
+	@Autowired
+	private WebsiteRepository websiteRepository;
+
+	@Override
+	public Page<PageMenuCmsDto> searchByPage(SearchDto dto) {
+		if (dto == null)
+			return null;
+
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+
+		if (pageIndex > 0)
+			pageIndex--;
+		else
+			pageIndex = 0;
+
+		String whereClause = "";
+		String sql = "";
+		String orderBy = " ORDER BY entity.code ASC";
+
+		String sqlCount = "select count(entity.id) from PageMenuCms as entity where (1=1)";
+		sql += "select new com.globits.hivhis.dto.PageMenuCmsDto(entity,true,false) from PageMenuCms as entity where (1=1) ";
+		if (dto.getWebsiteId() != null && StringUtils.hasText(dto.getWebsiteId().toString()))
+			whereClause += " AND (entity.website.id = :websiteId)";
+
+	 
+		
+		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword()))
+			whereClause += " and ( UPPER(entity.name) like UPPER(:text) or UPPER(entity.linkUrl) like UPPER(:text) ) ";
+		else if (dto.getGetOnlyParent() != null && dto.getGetOnlyParent())
+			whereClause += "  and entity.parent.id is null  ";
+
+		sql += whereClause + orderBy;
+		sqlCount += whereClause;
+
+		Query q = manager.createQuery(sql, PageMenuCmsDto.class);
+		Query qCount = manager.createQuery(sqlCount);
+
+		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
+			q.setParameter("text", '%' + dto.getKeyword() + '%');
+			qCount.setParameter("text", '%' + dto.getKeyword() + '%');
+		}
+
+		if (dto.getWebsiteId() != null && StringUtils.hasText(dto.getWebsiteId().toString())) {
+			q.setParameter("websiteId", dto.getWebsiteId());
+			qCount.setParameter("websiteId", dto.getWebsiteId());
+		}
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		List<PageMenuCmsDto> entities = q.getResultList();
+		long count = (long) qCount.getSingleResult();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		Page<PageMenuCmsDto> result = new PageImpl<>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public PageMenuCmsDto getOne(UUID id) {
+		PageMenuCms entity = pageMenuCmsRepository.findById(id).get();
+
+		if (entity != null)
+			return new PageMenuCmsDto(entity, false, true);
+
+		return null;
+	}
+
+	@Override
+	public PageMenuCmsDto saveOrUpdate(PageMenuCmsDto dto, UUID id) {
+		if (dto != null) {
+
+			if(checkDuplicatedCode(dto))
+				return null;
+
+			PageMenuCms entity = null;
+			if (id != null) {
+				if (dto.getId() != null && !dto.getId().equals(id))
+					return null;
+				entity = pageMenuCmsRepository.findById(id).get();
+			}
+
+			if (entity == null)
+				entity = new PageMenuCms();
+
+			PageMenuCms mainOffer = null;
+			if (dto.getParent() != null && dto.getParent().getId() != null) {
+				mainOffer = pageMenuCmsRepository.findById(dto.getParent().getId()).get();
+				entity.setParent(mainOffer);
+			}
+
+			entity.setCode(dto.getCode());
+			entity.setLinkUrl(dto.getLinkUrl());
+			entity.setType(dto.getType().trim());
+			entity.setName(dto.getName());
+			Website website = null;
+			website = websiteRepository.getOne(dto.getWebsite().getId());
+			entity.setWebsite(website);
+
+			/* Set all the values */
+
+			entity = pageMenuCmsRepository.save(entity);
+			if (entity != null)
+				return new PageMenuCmsDto(entity);
+		}
+
+		return null;
+	}
+
+	@Override
+	public boolean deleteById(UUID id) {
+		if (id == null)
+			return false;
+
+		PageMenuCms pageMenuCms = pageMenuCmsRepository.findById(id).get();
+
+		if (pageMenuCms != null && !pageMenuCms.getSubPageMenu().isEmpty())
+			return false;
+		else
+			pageMenuCmsRepository.deleteById(id);
+
+		return true;
+	}
+
+	@Override
+	public boolean checkDuplicatedCode(PageMenuCmsDto pageMenuCmsDto) {
+		// When update, duplicated code was accepted
+		if(pageMenuCmsDto.getId() != null){
+			String recentlyCode = pageMenuCmsRepository.findById(pageMenuCmsDto.getId()).get().getCode();
+
+			if(pageMenuCmsDto.getCode().equals(recentlyCode))
+				return false;
+		}
+
+		PageMenuCms pageMenuCms = pageMenuCmsRepository.findByCode(pageMenuCmsDto.getCode());
+
+		return pageMenuCms != null;
+	}
+
+}

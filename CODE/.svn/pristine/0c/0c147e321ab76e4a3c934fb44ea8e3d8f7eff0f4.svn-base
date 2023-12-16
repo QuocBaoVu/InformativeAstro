@@ -1,0 +1,15 @@
+<ng-template #sidenavRef>
+  <vex-sidenav title="CMS" [collapsed]="sidenavCollapsed$ | async"></vex-sidenav>
+</ng-template>
+
+<ng-template #toolbarRef>
+  <vex-toolbar [hasShadow]="toolbarShadowEnabled$ | async" [mobileQuery]="!(isDesktop$ | async)" class="vex-toolbar"
+    [collapsed]="sidenavCollapsed$ | async"></vex-toolbar>
+</ng-template>
+
+<ng-template #footerRef>
+  <vex-footer *ngIf="isFooterVisible$ | async" class="vex-footer"></vex-footer>
+</ng-template>
+
+<vex-layout [footerRef]="footerRef" [sidenavRef]="sidenavRef"
+  [toolbarRef]="toolbarRef"></vex-layout>

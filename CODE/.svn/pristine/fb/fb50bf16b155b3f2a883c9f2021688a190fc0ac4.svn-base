@@ -1,0 +1,104 @@
+package com.globits.hivhis.rest;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.Cache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.globits.hivhis.dto.CmsCategoryDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.hivhis.repository.CmsCategoryRepository;
+import com.globits.hivhis.service.CmsCategoryService;
+
+@RestController
+@RequestMapping("/api/cms/category")
+public class RestCmsCategoryController {
+	
+	@Autowired
+	private CmsCategoryService cmsCategoryService;
+	
+	@Autowired
+	private CmsCategoryRepository cmsCategoryRepository;
+
+	// NDuc start
+	@RequestMapping(value="/{categoryId}",method = RequestMethod.GET)
+	public CmsCategoryDto getCmsCategory(@PathVariable("categoryId")UUID categoryId){
+		return cmsCategoryService.getCmsCategory(categoryId);
+	}
+
+	@RequestMapping(value="/save", method = RequestMethod.POST)
+	public CmsCategoryDto saveCmsCategory(@RequestBody CmsCategoryDto dto) {
+		return cmsCategoryService.saveCmsCategory(dto);
+	}
+
+	@RequestMapping(value="/{categoryId}",method = RequestMethod.DELETE)
+	public Boolean deleteCmsCategory(@PathVariable("categoryId")UUID categoryId){
+		return cmsCategoryService.deleteCmsCategory(categoryId);
+	}
+
+	@RequestMapping(value="/paging",method = RequestMethod.POST)
+	public Page<CmsCategoryDto> paging(@RequestBody SearchDto dto){
+		return cmsCategoryService.paging(dto);
+	}
+	// NDuc end
+	
+	@RequestMapping(value="/page/{pageIndex}/{pageSize}", method = RequestMethod.GET)
+	public Page<CmsCategoryDto> getPageCmsCategoryDto(@PathVariable("pageIndex")int pageIndex, @PathVariable("pageSize")int pageSize){
+		return cmsCategoryService.getPageCmsCategoryDto(pageIndex, pageSize);
+	}
+	
+	@RequestMapping(value="get/all", method = RequestMethod.GET)
+	public List<CmsCategoryDto> getAll() {
+		return cmsCategoryRepository.getAll();
+	}
+	
+	@RequestMapping(value="/create",method = RequestMethod.POST)
+	public CmsCategoryDto createCmsCategory(@RequestBody CmsCategoryDto dto){
+		return cmsCategoryService.saveCmsCategory(dto, null);
+	}
+	
+	@RequestMapping(value = "/update/{categoryId}", method = RequestMethod.PUT)
+	public CmsCategoryDto updateCmsCategory(@RequestBody CmsCategoryDto dto, @PathVariable("categoryId")UUID categoryId){
+		return cmsCategoryService.saveCmsCategory(dto, categoryId);
+	}
+	
+//	@RequestMapping(value="/delete/{id}",method=RequestMethod.DELETE)
+//	public Boolean deleteCmsCategory(@PathVariable("id")UUID id) {
+//		return cmsCategoryService.deleteCategoryById(id);
+//	}
+
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Boolean> deleteCheckById(@PathVariable("id") UUID id) {
+		Boolean result = cmsCategoryService.deleteCheckById(id);
+		if(result) {
+			cmsCategoryService.deleteCategoryById(id);
+			return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@RequestMapping(value="/search", method = RequestMethod.POST)
+	public Page<CmsCategoryDto> searchCmsCategory(@RequestBody SearchDto search) {
+		return cmsCategoryService.getCmsCategoryBySearch(search);
+	}
+	
+	@RequestMapping(value="/all/parentisnull", method = RequestMethod.GET)
+	public List<CmsCategoryDto> getAllByParentNull() {
+		return cmsCategoryService.getAllByParentNull();
+	}
+	
+	@RequestMapping(value="/getByRoot", method = RequestMethod.POST)
+	public Page<CmsCategoryDto> getByRoot(@RequestBody SearchDto search) {
+		return cmsCategoryService.cmsCategoryBySearch(search);
+	}
+}

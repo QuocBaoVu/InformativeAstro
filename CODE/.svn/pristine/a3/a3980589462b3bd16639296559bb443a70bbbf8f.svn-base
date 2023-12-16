@@ -1,0 +1,124 @@
+#main-menu {
+  background-color: $color-blue-black;
+  background-image: none;
+  width: 100%;
+  display: block;
+  transition: all 0.3s ease-out;
+
+  ul {
+    position: relative;
+    margin: 0;
+
+    li {
+      display: block;
+      padding-right: 1px;
+      position: relative;
+
+      &:hover > ul.sub-menu {
+        opacity: 1;
+        visibility: visible;
+        top: 100%;
+      }
+
+      a {
+        display: block;
+        color: $color-white;
+        font-size: 16px;
+        padding: 0 15px;
+        outline: none;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-family: "Roboto Condensed", sans-serif;
+        line-height: 47px;
+        transition: all 0.3s ease-out;
+
+        &:hover {
+          background-color: $color-blue;
+        }
+      }
+    }
+
+    &.sub-menu {
+      position: absolute;
+      left: 0;
+      top: 100%;
+      width: 255px;
+      background-color: $color-blue;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease-out;
+
+      li a {
+        font-size: 14px;
+
+        &:hover {
+          font-style: italic;
+          color: $color-blue-black;
+        }
+      }
+    }
+
+    &.menu {
+      margin: auto;
+      @include element-center;
+    }
+  }
+}
+
+.main-content {
+  margin-bottom: 10px;
+  max-width: 1150px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.slider {
+  width: 1120px;
+  max-width: 100vw;
+  height: 500px;
+  margin: auto;
+  overflow: hidden;
+  display: block;
+  position: relative;
+
+  .list {
+    width: max-content;
+    height: 100%;
+    display: flex;
+    transition: 1s;
+    width: 100%;
+    min-width: max-content;
+
+    .item img {
+      width: 1120px;
+      height: 100%;
+    }
+  }
+
+  .buttons {
+    position: absolute;
+    top: 45%;
+    left: 5%;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #fff5;
+      color: #fff;
+      border: none;
+      font-family: monospace;
+      font-weight: bold;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    height: 400px;
+  }
+}

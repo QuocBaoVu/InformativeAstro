@@ -1,0 +1,5 @@
+com\globits\cms\config\WebSecurityConfig.class
+com\globits\cms\config\DatabaseConfig.class
+com\globits\cms\controllers\TestController.class
+com\globits\cms\CmsApplication.class
+com\globits\security\listeners\ApplicationStartupListener.class

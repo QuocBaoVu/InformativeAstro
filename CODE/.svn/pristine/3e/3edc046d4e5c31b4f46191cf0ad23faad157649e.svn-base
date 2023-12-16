@@ -1,0 +1,46 @@
+package com.globits.cms.rest;
+
+import com.globits.cms.dto.CmsArticleViewDto;
+import com.globits.cms.dto.CmsSearchDto;
+import com.globits.cms.dto.home.ArticleViewDto;
+import com.globits.cms.dto.home.CategoryViewDto;
+import com.globits.cms.dto.home.HomePageDto;
+import com.globits.cms.dto.home.MenuHeaderDto;
+import com.globits.cms.service.CmsPublishService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/public/cms")
+public class RestCmsPublicController {
+	@Autowired
+	private CmsPublishService cmsPublishService;
+
+	// lay ra menu
+	@RequestMapping(value = "/get-menu-header", method = RequestMethod.GET)
+	public List<MenuHeaderDto> getListMenu() {
+		return cmsPublishService.getMenuHeader();
+	}
+	// danh muc
+
+	@RequestMapping(value = "/get-category-by-slug", method = RequestMethod.GET)
+	public List<CategoryViewDto> getCategoryBySlug(@RequestParam("slug") String slug) {
+		return cmsPublishService.getCategoryBySlug(slug);
+	}
+
+	// bai viet
+	@RequestMapping(value = "/get-page-article-by-slug", method = RequestMethod.POST)
+	public Page<ArticleViewDto> getPageArticleBySlug(@RequestBody CmsSearchDto dto) {
+		return cmsPublishService.getPageArticleBySlug(dto);
+	}
+
+	// trang chu
+	@RequestMapping(value = "/get-home-page", method = RequestMethod.POST)
+	public HomePageDto getHomePage() {
+		return cmsPublishService.getHomePage();
+	}
+
+}

@@ -1,0 +1,9 @@
+export interface TypeShard {
+    [field: string]: any;
+}
+
+export const LIST_TYPE_PAGE_MENU = [
+    { id: "1", name: "Đường link" },
+    { id: "2", name: "Bài viết" },
+    { id: "3", name: "Danh mục" },
+]

@@ -1,0 +1,25 @@
+<div class="popup-header">
+  <h3>{{!defaults?.id ? 'Thêm mới' : 'Chỉnh sửa'}} danh mục</h3>
+  <button type="button" tabindex="-1" (click)="onClose()">
+    <icon-close></icon-close>
+  </button>
+</div>
+
+<form (submit)="onSubmit()" [formGroup]="form!">
+  <mat-dialog-content class="popup-content p-3">
+    <input-component [control]="f?.code" controlName="code" [required]="true" requiredText="Mã không được bỏ trống!"
+      label="Mã danh mục"></input-component>
+
+    <input-component [control]="f?.code" controlName="title" [required]="true"
+      requiredText="Tiêu đề không được bỏ trống!" label="Tiêu đề"></input-component>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="popup-footer" align="end">
+    <button type="submit" [disabled]="submitted">
+      Lưu
+    </button>
+    <button type="button" (click)="onClose()" [disabled]="submitted">
+      Hủy
+    </button>
+  </mat-dialog-actions>
+</form>

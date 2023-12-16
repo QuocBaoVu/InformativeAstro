@@ -1,0 +1,28 @@
+<nav id="main-menu" class="main-menu">
+    <ng-container [ngTemplateOutlet]="Menu" [ngTemplateOutletContext]="{row: listMenuHeader, level: 1}">
+    </ng-container>
+</nav>
+
+<main class="main-content">
+    <h3>{{article?.title}}</h3>
+    <p>{{article?.publishDate}}</p>
+    <h5>{{article?.summary}}</h5>
+    <section [innerHTML]="article?.content"></section>
+</main>
+
+<ng-template #Menu let-level="level" let-row="row">
+    <ul class="{{level === 1 ? 'menu' : 'sub-menu'}}">
+        <li *ngFor="let item of row">
+            <ng-container [ngTemplateOutlet]="ItemMenu" [ngTemplateOutletContext]="{item: item, level}">
+            </ng-container>
+        </li>
+    </ul>
+
+    <ng-template #ItemMenu let-item="item" let-level="level">
+        <a [routerLink]="['/' + item.slug]" href="{{'/' + item.slug}}">{{item?.name}}</a>
+        <ng-container *ngIf="level === 1 && item?.children?.length > 0">
+            <ng-container [ngTemplateOutlet]="Menu" [ngTemplateOutletContext]="{row: item?.children, level: level + 1}">
+            </ng-container>
+        </ng-container>
+    </ng-template>
+</ng-template>

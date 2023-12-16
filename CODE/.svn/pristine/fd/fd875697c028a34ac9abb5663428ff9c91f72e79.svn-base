@@ -1,0 +1,11 @@
+import { NavigationItem } from "src/@vex/interfaces/navigation-item.interface";
+
+export const navigation: NavigationItem[] = [
+    {
+        type: 'link',
+        label: 'Xem danh sách file',
+        icon: 'mat:trending_up',
+        route: '/list-file',
+        routerLinkActiveOptions: { exact: true },
+    },
+];

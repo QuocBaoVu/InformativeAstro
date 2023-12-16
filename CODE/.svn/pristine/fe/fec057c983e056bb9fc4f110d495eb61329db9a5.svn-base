@@ -1,0 +1,64 @@
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { CustomLayoutComponent } from './custom-layout-hiv-info/custom-layout.component';
+import { VexRoutes } from '../@vex/interfaces/vex-route.interface';
+import { QuicklinkModule, QuicklinkStrategy } from 'ngx-quicklink';
+import { AuthGuard } from './_guards/index';
+import { CustomLayoutVAACComponent } from './custom-layout-vaac/custom-layout-vaac.component';
+import { AuthGuardVaac } from "./_guards/auth-vaac.guard";
+import { AuthGuardHIV } from "./_guards/auth-hiv.guard";
+import { AuthTtytGuard } from './_guards/auth-ttyt.guard';
+// import { AuthGuardTTYT } from './_guards/auth-ttyt.guard';
+const routes: VexRoutes = [
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/pages/auth/login/login.module').then(m => m.LoginModule),
+  },
+  {
+    path: 'ttyt',
+    loadChildren: () => import('./pages/pages/auth/login/login.module').then(m => m.LoginModule),
+  },
+  {
+    path: 'coming-soon',
+    loadChildren: () => import('./pages/pages/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
+  },
+  {
+    path: 'choose-view-account',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/choose-view-account/choose-view-account.module').then(m => m.ChooseViewAccountModule),
+  },
+  {
+    path: '',
+    canActivate: [AuthGuardVaac],
+    component: CustomLayoutComponent,
+    canActivateChild: [AuthGuardVaac],
+    children: [
+    ]
+  },
+  {
+    path: 'ttyt',
+    canActivate: [AuthTtytGuard],
+    component: CustomLayoutVAACComponent,
+    canActivateChild: [AuthTtytGuard],
+    children: [
+
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full'
+  },
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy: QuicklinkStrategy,
+    scrollPositionRestoration: 'enabled',
+    relativeLinkResolution: 'corrected',
+    anchorScrolling: 'enabled'
+  })],
+  exports: [RouterModule, QuicklinkModule]
+})
+export class AppRoutingModule {
+}

@@ -1,0 +1,21 @@
+package com.globits.hivhis.service;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+
+import com.globits.hivhis.domain.CmsPaneDataConfig;
+import com.globits.hivhis.dto.CmsPaneDataConfigDto;
+import com.globits.hivhis.dto.SearchDto;
+import com.globits.core.service.GenericService;
+
+public interface CmsPaneDataConfigService extends GenericService<CmsPaneDataConfig, UUID>{
+
+	Page<CmsPaneDataConfigDto> searchByPage(SearchDto dto);
+	
+	CmsPaneDataConfigDto getOne(UUID id);
+	
+	CmsPaneDataConfigDto saveOrUpdate(CmsPaneDataConfigDto dto, UUID id);
+	
+	void deleteById(UUID id);
+}

@@ -1,0 +1,45 @@
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { CustomLayoutComponent } from './custom-layout/custom-layout.component';
+import { VexRoutes } from '../@vex/interfaces/vex-route.interface';
+import { QuicklinkModule, QuicklinkStrategy } from 'ngx-quicklink';
+import { AuthGuard } from './_guards/index';
+
+const routes: VexRoutes = [
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/pages/auth/login/login.module').then(m => m.LoginModule),
+  },
+  {
+    path: 'choose-view-account',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/choose-view-account/choose-view-account.module').then(m => m.ChooseViewAccountModule),
+  },
+  {
+    path: '',
+    component: CustomLayoutComponent,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    children: [
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full'
+  },
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: QuicklinkStrategy,
+      scrollPositionRestoration: 'enabled',
+      relativeLinkResolution: 'corrected',
+      anchorScrolling: 'enabled'
+    })
+  ],
+  exports: [RouterModule, QuicklinkModule]
+})
+export class AppRoutingModule {
+}

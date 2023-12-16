@@ -1,0 +1,26 @@
+export class SearchObject {
+  keyword?: string = null;
+  pageIndex?: number = 1;
+  pageSize?: number = 10;
+  type?: number = null;
+  tab?: number = null;
+  parentId?: string = null;
+  adminIds?: string[] = null;
+  birthDate?: Date = null;
+  insuranceAssessmentReportStatus?: string = null;
+
+  constructor(value?: SearchObject){
+    Object.assign(this, value);
+  }
+
+  checkSearchObject?(newValue?: SearchObject) {
+    if (!("pageIndex" in newValue) && !("pageSize" in newValue)) {
+      Object.assign(this, newValue, { pageIndex: 1, pageSize: this.pageSize });
+    } else if ("pageIndex" in newValue) {
+      this.pageIndex = newValue.pageIndex;
+    } else if ("pageSize" in newValue) {
+      this.pageSize = newValue.pageSize;
+      this.pageIndex = 1;
+    }
+  }
+}

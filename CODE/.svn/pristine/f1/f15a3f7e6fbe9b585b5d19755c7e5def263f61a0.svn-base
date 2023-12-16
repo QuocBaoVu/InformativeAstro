@@ -1,0 +1,12 @@
+import { Organization } from "./Organization.model";
+
+export class Website {
+    name?: string = null;
+    code?: string = null;
+    domain?: string = null;
+    template?: string = null;
+    org?: Organization = null;
+    parent?: Website = null;
+    logoPath?: string = null;
+    parentId?: string = null;;
+}

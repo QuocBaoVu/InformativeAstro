@@ -1,0 +1,22 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { VexRoutes } from 'src/@vex/interfaces/vex-route.interface';
+import { RouterModule } from '@angular/router';
+import { ArticleComponent } from './article.component';
+import { GlobitsPaginatorModule } from 'src/app/_common/component/paginator/paginator.module';
+
+const routes: VexRoutes = [
+  { path: ":category", component: ArticleComponent },
+  { path: ":category/:article", component: ArticleComponent },
+];
+
+@NgModule({
+  declarations: [ArticleComponent],
+  imports: [
+    CommonModule,
+    GlobitsPaginatorModule,
+    RouterModule.forChild(routes),
+  ],
+  exports: [RouterModule]
+})
+export class ArticleModule { }

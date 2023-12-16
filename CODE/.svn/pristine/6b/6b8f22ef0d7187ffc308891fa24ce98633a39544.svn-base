@@ -1,0 +1,20 @@
+package com.globits.hivhis.service;
+
+import com.globits.hivhis.dto.CmsSearchDto;
+import com.globits.hivhis.dto.home.ArticleViewDto;
+import com.globits.hivhis.dto.home.CategoryViewDto;
+import com.globits.hivhis.dto.home.HomePageDto;
+import com.globits.hivhis.dto.home.MenuHeaderDto;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+
+public interface CmsPublishService {
+    List<MenuHeaderDto> getMenuHeader(); // menu header
+
+    List<CategoryViewDto> getCategoryBySlug(String slug);
+
+    Page<ArticleViewDto> getPageArticleBySlug(CmsSearchDto dto);
+
+    HomePageDto getHomePage();
+}

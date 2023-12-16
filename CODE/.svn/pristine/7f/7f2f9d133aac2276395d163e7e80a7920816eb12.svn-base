@@ -1,0 +1,39 @@
+import { CmsArticle } from "./CmsArticle.model";
+import { Website } from "./Website.model";
+import { PagePaging } from "./PagePaging";
+
+export class CmsCategory {
+    id?: string = null;
+    title?: string = null;
+    code?: string = null;
+    description?: string = null;
+    slug?: string = null;
+    parent?: CmsCategory = null;
+    isActive?: boolean = null;
+    isShowMenu?: boolean = null;
+    positionIndex?: number = null
+    ischeck?: boolean = null;
+    subCategories?: CmsCategory[] = [];
+    articles?: PagePaging<CmsArticle> = null;//Các bài viết hiển thị trực tiếp
+    listArticles?: CmsArticle = null;//Các bài viết hiển thị trực tiếp
+    allArticles?: CmsArticle = null;//Các bài viết hiển thị trực tiếp
+    website?: Website = null;
+    isViewOnHover?: boolean = null;
+    categoryType?: number = null;// =1:Danh sách bài báo, =2:Link
+    displayType?: number = null;// =1: Hiển thị toán bộ bài viêt; =2: Hiển thị bài viết tiêu điểm
+    linkUrl?: string = null;//đường dẫn link
+    isShowLink?: boolean = null;
+    pageIndex?: number = null;
+    pageSize?: number = null;
+
+    constructor(value?: CmsCategory) {
+        Object.assign(this, value);
+    }
+}
+
+export class CmsCategoryArticle {
+    id?: string;
+    category?: CmsCategory = null;
+    article?: CmsArticle = null;
+    ischeck?: boolean = false;
+}
