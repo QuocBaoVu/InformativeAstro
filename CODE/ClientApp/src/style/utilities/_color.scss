@@ -1,11 +1,24 @@
-.bg-blue-black {
+.bg-transparent {
+    background-color: transparent;
+  }
+  
+  .bg-black {
+    background-color: #000000 !important;
+  }
+  
+  .bg-gray {
+    background-color: $gray !important;
+  }
+  
+  .bg-blue-black {
     background-color: $color-blue-black;
-}
-
-.bg-gray-blue {
-    background-color: $color-gray-blue;
-}
-
-.text-danger {
+  }
+  
+  .bg-light-gray {
+    background-color: $light-gray;
+  }
+  
+  .text-danger {
     color: $color-red !important;
-}
+  }
+  

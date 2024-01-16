@@ -5,7 +5,10 @@ import { PageUserService } from '../pages-user.service';
 @Component({
   selector: 'home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  host: {
+    class: "container"
+  }
 })
 export class HomeComponent implements OnInit {
 

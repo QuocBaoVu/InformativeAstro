@@ -8,15 +8,21 @@ import { IconModule } from '../_common/Icon/icon.module';
 import { GlobitsPaginatorModule } from '../_common/component/paginator/paginator.module';
 import { MenuComponent } from './common/menu.component';
 import { SliderComponent } from './common/slider.component';
+import { LayoutUserComponent } from './layout-user.component';
 
 const routes: VexRoutes = [
-    { path: "", component: HomeComponent },
-    { path: ":category", component: ArticleComponent },
-    { path: ":category/:article", component: ArticleComponent },
+    {
+        path: "",
+        children: [
+            { path: "", component: HomeComponent },
+            { path: ":category", component: ArticleComponent },
+            { path: ":category/:article", component: ArticleComponent },
+        ]
+    }
 ];
 
 @NgModule({
-    declarations: [ArticleComponent, HomeComponent, MenuComponent, SliderComponent],
+    declarations: [ArticleComponent, HomeComponent, MenuComponent, SliderComponent, LayoutUserComponent],
     imports: [
         CommonModule,
         RouterModule.forChild(routes),
