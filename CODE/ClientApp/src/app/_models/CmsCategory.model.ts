@@ -66,4 +66,5 @@ export class CategoryView {
     slug?: string = null;
     children?: Array<CategoryView> = new Array();
     articles?: Array<ArticleView> = new Array(); // bai viet theo category
+    displayType?: number = null;
 }

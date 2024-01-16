@@ -15,7 +15,7 @@ import com.globits.cms.dto.CmsArticleDto;
 
 @Repository
 public interface CmsArticleRepsitory extends JpaRepository<CmsArticle, UUID> {
-	@Query(value = "select new com.globits.cms.dto.home.ArticleViewDto(e, true) from CmsArticle e where e.plugInTheFocus is true order by e.positionIndex")
+	@Query(value = "select new com.globits.cms.dto.home.ArticleViewDto(e, true) from CmsArticle e where e.plugInTheFocus is true and e.isActive is true order by e.positionIndex")
 	List<ArticleViewDto> getArticleDisplayHomePage();
 
 	@Query(value = "select new com.globits.cms.dto.home.ArticleViewDto(e, true) from CmsArticle e where e.plugInTheItem is true order by e.positionIndex")
