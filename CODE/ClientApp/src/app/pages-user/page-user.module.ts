@@ -9,8 +9,10 @@ import { GlobitsPaginatorModule } from '../_common/component/paginator/paginator
 import { MenuComponent } from './common/menu.component';
 import { SliderComponent } from './common/slider.component';
 import { LayoutUserComponent } from './layout-user.component';
+import { GalaxyComponent } from './common/galaxy.component';
 
 const routes: VexRoutes = [
+    { path: "galaxy", component: GalaxyComponent },
     {
         path: "",
         children: [
@@ -18,7 +20,7 @@ const routes: VexRoutes = [
             { path: ":category", component: ArticleComponent },
             { path: ":category/:article", component: ArticleComponent },
         ]
-    }
+    },
 ];
 
 @NgModule({

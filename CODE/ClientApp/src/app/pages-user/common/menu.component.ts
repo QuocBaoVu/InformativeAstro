@@ -16,7 +16,7 @@ import { Router } from "@angular/router";
           <li><a [routerLink]="['/']" href="/"><icon-home></icon-home></a></li>
 
           <li>
-            <a href="/3d-modules" [routerLink]="['/3d-modules']">
+            <a href="/galaxy" [routerLink]="['/galaxy']" target="_blank">
               3D Modules
             </a>
           </li>
