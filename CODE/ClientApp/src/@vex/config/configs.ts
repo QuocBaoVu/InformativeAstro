@@ -26,7 +26,7 @@ const defaultConfig: VexConfig = {
   boxed: false,
   sidenav: {
     title: 'CMS',
-    imageUrl: 'assets/img/demo/logo.png',
+    imageUrl: 'assets/img/demo/logo.jpg',
     showCollapsePin: true,
     user: {
       visible: true

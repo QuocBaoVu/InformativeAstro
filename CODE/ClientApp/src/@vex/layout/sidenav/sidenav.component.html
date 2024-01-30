@@ -1,6 +1,6 @@
 <div (mouseenter)="collapseOpenSidenav()" (mouseleave)="collapseCloseSidenav()" [class.collapsed]="collapsed" [class.open]="collapsed && collapsedOpen$ | async" class="sidenav flex flex-col">
   <div class="sidenav-toolbar">
-      <img [src]="imageUrl$ | async" alt="Logo" class="w-6 select-none flex-none side-nav-logo" style="zoom: 1.5" />
+      <img [src]="imageUrl$ | async" alt="Logo" class="w-6 select-none flex-none side-nav-logo rounded-full" style="zoom: 1.5" />
       <h5 class="vex-sidenav-toolbar__headline"><button (click)="clickHome()">{{ title }}</button></h5>
   </div>
 
