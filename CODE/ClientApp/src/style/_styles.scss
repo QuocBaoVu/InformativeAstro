@@ -43,6 +43,7 @@
         line-height: 40px;
         transition: all 0.3s ease-out;
         font-weight: 550;
+        white-space: nowrap;
       }
     }
 
@@ -58,8 +59,10 @@
       transition: all 0.2s ease-out;
 
       li a {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         font-weight: 600;
+        max-width: 100%;
+        text-overflow: ellipsis;
 
         &:hover {
           opacity: .8;
@@ -70,6 +73,7 @@
 
     &.menu {
       margin: auto;
+      flex-wrap: nowrap;
       @include element-center;
     }
   }
@@ -128,7 +132,15 @@
   padding-right: 15px;
 }
 
+html {
+  font-size: 13px;
+}
+
 @media (min-width: 576px) {
+  html {
+    font-size: 14px;
+  }
+
   .container {
     max-width: 540px;
   }
@@ -139,6 +151,9 @@
 }
 
 @media (min-width: 768px) {
+  html {
+    font-size: 14.5px;
+  }
   .container {
     max-width: 720px;
   }
@@ -149,6 +164,9 @@
 }
 
 @media (min-width: 992px) {
+  html {
+    font-size: 15px;
+  }
   .container {
     max-width: 960px;
   }
@@ -159,6 +177,9 @@
 }
 
 @media (min-width: 1200px) {
+  html {
+    font-size: 15.5px;
+  }
   .container {
     max-width: 1140px;
   }
@@ -169,6 +190,10 @@
 }
 
 @media (min-width: 1280px) {
+  html {
+    font-size: 16px;
+  }
+
   .container {
     max-width: 1190px;
   }

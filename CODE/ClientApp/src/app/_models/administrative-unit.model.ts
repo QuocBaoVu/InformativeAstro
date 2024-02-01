@@ -6,7 +6,6 @@ export class AdministrativeUnit{
   level: number;
   position: number;
   elogCode: string;
-  hivInfoCode: string;
   pqmCode: string;
   linePath: string;
   parentDto: AdministrativeUnit;
